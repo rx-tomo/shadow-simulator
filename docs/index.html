@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>日影シミュレータ（MVP）</title>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/maplibre-gl@5.13.0/dist/maplibre-gl.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/@watergis/maplibre-gl-terradraw@1.9.7/dist/maplibre-gl-terradraw.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+
+    <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@5.13.0/dist/maplibre-gl.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@watergis/maplibre-gl-terradraw@1.9.7/dist/maplibre-gl-terradraw.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/luxon@3.7.2/build/global/luxon.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/suncalc@1.9.0/suncalc.js"></script>
+
+    <script type="module" src="./app.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <div id="map"></div>
+
+      <aside id="panel" class="panel">
+        <header class="panel-header">
+          <h1>日影シミュレータ</h1>
+          <button id="panelToggle" class="icon-button" aria-label="パネルを開閉">
+            ⟷
+          </button>
+        </header>
+
+        <div class="panel-body">
+          <div id="fileNotice" class="notice hidden">
+            ローカル（file://）で開くと地図が表示されない場合があります。GitHub
+            Pages などの静的ホスティングで開いてください。
+          </div>
+          <section class="section">
+            <h2>場所</h2>
+            <div class="field">
+              <label for="searchInput">地名/住所検索</label>
+              <div class="row">
+                <input
+                  id="searchInput"
+                  type="text"
+                  placeholder="例）東京都千代田区"
+                />
+                <button id="searchButton" class="btn">検索</button>
+              </div>
+              <p class="hint">
+                地図を移動して、敷地位置を決めてください。
+              </p>
+            </div>
+          </section>
+
+          <section class="section">
+            <h2>建物</h2>
+            <div class="field">
+              <label>描画モード</label>
+              <div class="row">
+                <button id="drawRectButton" class="btn btn-primary">
+                  回転矩形を描く
+                </button>
+                <button id="selectButton" class="btn">選択/編集</button>
+                <button id="deleteButton" class="btn btn-danger">削除</button>
+              </div>
+            </div>
+
+            <div class="field two-col">
+              <div>
+                <label for="heightInput">高さ (m)</label>
+                <input
+                  id="heightInput"
+                  type="number"
+                  min="1"
+                  max="500"
+                  step="0.1"
+                  value="6.2"
+                />
+                <input
+                  id="heightRange"
+                  type="range"
+                  min="1"
+                  max="500"
+                  step="0.1"
+                  value="6.2"
+                />
+              </div>
+              <div>
+                <label for="floorsInput">階数</label>
+                <input
+                  id="floorsInput"
+                  type="number"
+                  min="1"
+                  max="100"
+                  step="1"
+                  value="2"
+                />
+                <input
+                  id="floorsRange"
+                  type="range"
+                  min="1"
+                  max="100"
+                  step="1"
+                  value="2"
+                />
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="floorHeightInput">1階あたり高さ (m)</label>
+              <input
+                id="floorHeightInput"
+                type="number"
+                min="2.5"
+                max="5.0"
+                step="0.1"
+                value="3.1"
+              />
+              <p class="hint">
+                住宅〜低層ビルの一般的な目安を初期値にしています。
+              </p>
+            </div>
+          </section>
+
+          <section class="section">
+            <h2>日時</h2>
+            <div class="field">
+              <label for="dateInput">日付</label>
+              <input id="dateInput" type="date" />
+            </div>
+            <div class="field">
+              <label for="timeInput">時刻</label>
+              <input id="timeInput" type="time" step="60" />
+              <input id="timeRange" type="range" min="0" max="1439" step="1" />
+              <div class="row">
+                <button id="playDayButton" class="btn">1日再生</button>
+                <button id="resetTimeButton" class="btn">現在時刻</button>
+              </div>
+            </div>
+            <div class="field">
+              <label for="timezoneSelect">タイムゾーン</label>
+              <select id="timezoneSelect">
+                <option value="Asia/Tokyo" selected>Asia/Tokyo (日本)</option>
+                <option value="UTC">UTC</option>
+                <option value="America/Los_Angeles">America/Los_Angeles</option>
+                <option value="Europe/London">Europe/London</option>
+                <option value="Australia/Sydney">Australia/Sydney</option>
+              </select>
+            </div>
+          </section>
+
+          <section class="section">
+            <h2>表示</h2>
+            <div class="field">
+              <label>視点プリセット</label>
+              <div class="row wrap" id="viewPresetRow">
+                <button class="btn small" data-view="top">真上</button>
+                <button class="btn small" data-view="oblique">斜め</button>
+                <button class="btn small" data-view="low">地表寄り</button>
+                <button class="btn small" data-view="north">北向き</button>
+                <button class="btn small" data-view="orbit">周回</button>
+              </div>
+            </div>
+            <div class="field two-col">
+              <div>
+                <label for="pitchRange">傾き (pitch)</label>
+                <input
+                  id="pitchRange"
+                  type="range"
+                  min="0"
+                  max="60"
+                  step="1"
+                  value="30"
+                />
+              </div>
+              <div>
+                <label for="bearingRange">回転 (bearing)</label>
+                <input
+                  id="bearingRange"
+                  type="range"
+                  min="-180"
+                  max="180"
+                  step="1"
+                  value="0"
+                />
+              </div>
+            </div>
+          </section>
+
+          <section class="section stats">
+            <h2>結果</h2>
+            <div id="statsBox" class="stats-box">
+              <div>太陽高度: <span id="sunAltitude">—</span></div>
+              <div>太陽方位: <span id="sunAzimuth">—</span></div>
+              <div>影の長さ（最大）: <span id="shadowLength">—</span></div>
+            </div>
+          </section>
+        </div>
+
+        <footer class="panel-footer">
+          <small>© MVP. OSM / MapLibre.</small>
+        </footer>
+      </aside>
+    </div>
+  </body>
+</html>
