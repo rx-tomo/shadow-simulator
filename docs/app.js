@@ -49,10 +49,9 @@ function syncHeightFloors(from) {
 function initDateTimeControls() {
   const now = luxon.DateTime.now().setZone(state.timezone);
   el("dateInput").value = now.toISODate();
-  el("timeInput").value = now.toFormat("HH:mm");
-
-  const minutes = now.hour * 60 + now.minute;
-  el("timeRange").value = String(minutes);
+  // 初期表示は日中にして「影が出ない」混乱を避ける
+  el("timeInput").value = "12:00";
+  el("timeRange").value = String(12 * 60);
 }
 
 function timeRangeToTimeInput() {
@@ -191,9 +190,15 @@ function initMap() {
       sources: {
         osm: {
           type: "raster",
-          tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
+          // tile.openstreetmap.org はCORS制限で黒画面になることがあるため、CORS対応のベースマップを使う
+          tiles: [
+            "https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+            "https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+            "https://c.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+            "https://d.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+          ],
           tileSize: 256,
-          attribution: "© OpenStreetMap contributors",
+          attribution: "© OpenStreetMap contributors © CARTO",
         },
       },
       layers: [{ id: "osm", type: "raster", source: "osm" }],
@@ -220,8 +225,15 @@ function initTerraDraw(map) {
 
   const disableMapInteractions = () => {
     try {
+      map.stop?.();
       if (map.dragPan?.isEnabled()) map.dragPan.disable();
       if (map.dragRotate?.isEnabled()) map.dragRotate.disable();
+      if (map.scrollZoom?.isEnabled()) map.scrollZoom.disable();
+      if (map.boxZoom?.isEnabled()) map.boxZoom.disable();
+      if (map.doubleClickZoom?.isEnabled()) map.doubleClickZoom.disable();
+      if (map.keyboard?.isEnabled()) map.keyboard.disable();
+      if (map.touchZoomRotate?.isEnabled()) map.touchZoomRotate.disable();
+      if (map.touchPitch?.isEnabled()) map.touchPitch.disable();
     } catch {
       // ignore
     }
@@ -231,6 +243,12 @@ function initTerraDraw(map) {
     try {
       if (map.dragPan && !map.dragPan.isEnabled()) map.dragPan.enable();
       if (map.dragRotate && !map.dragRotate.isEnabled()) map.dragRotate.enable();
+      if (map.scrollZoom && !map.scrollZoom.isEnabled()) map.scrollZoom.enable();
+      if (map.boxZoom && !map.boxZoom.isEnabled()) map.boxZoom.enable();
+      if (map.doubleClickZoom && !map.doubleClickZoom.isEnabled()) map.doubleClickZoom.enable();
+      if (map.keyboard && !map.keyboard.isEnabled()) map.keyboard.enable();
+      if (map.touchZoomRotate && !map.touchZoomRotate.isEnabled()) map.touchZoomRotate.enable();
+      if (map.touchPitch && !map.touchPitch.isEnabled()) map.touchPitch.enable();
     } catch {
       // ignore
     }
@@ -292,7 +310,9 @@ function initTerraDraw(map) {
     if (typeof draw.clear === "function") {
       draw.clear();
     } else if (typeof draw.removeFeatures === "function") {
-      const ids = (draw.getSnapshot()?.features ?? []).map((f) => f.id);
+      const snap = draw.getSnapshot?.();
+      const features = Array.isArray(snap) ? snap : snap?.features ?? [];
+      const ids = features.map((f) => f.id).filter(Boolean);
       if (ids.length) draw.removeFeatures(ids);
     }
     updateBuildings();
@@ -303,7 +323,10 @@ function initTerraDraw(map) {
   window.setInterval(() => {
     const snapshot = draw.getSnapshot?.();
     if (!snapshot) return;
-    const polys = (snapshot.features ?? []).filter(
+    const features = Array.isArray(snapshot)
+      ? snapshot
+      : snapshot.features ?? [];
+    const polys = features.filter(
       (f) => f.geometry?.type === "Polygon"
     );
     const signature = JSON.stringify(
@@ -314,6 +337,17 @@ function initTerraDraw(map) {
       updateBuildings();
     }
   }, 500);
+
+  // 操作完了時にも更新（描画/編集直後の反映を確実にする）
+  const canvas = map.getCanvas?.();
+  canvas?.addEventListener("pointerup", () => {
+    updateBuildings();
+    updateShadows();
+  });
+  canvas?.addEventListener("pointercancel", () => {
+    updateBuildings();
+    updateShadows();
+  });
 
   state.terraInstance = draw;
 
@@ -334,7 +368,7 @@ function ensureBuildingLayers(map) {
     source: "buildings",
     paint: {
       "fill-color": "#4f46e5",
-      "fill-opacity": 0.15,
+      "fill-opacity": 0.12,
     },
   });
 
@@ -343,10 +377,34 @@ function ensureBuildingLayers(map) {
     type: "fill-extrusion",
     source: "buildings",
     paint: {
-      "fill-extrusion-color": "#6366f1",
-      "fill-extrusion-opacity": 0.6,
+      "fill-extrusion-color": [
+        "interpolate",
+        ["linear"],
+        ["get", "height"],
+        0,
+        "#60a5fa",
+        60,
+        "#34d399",
+        150,
+        "#f97316",
+        300,
+        "#a855f7",
+      ],
+      "fill-extrusion-opacity": 0.55,
       "fill-extrusion-height": ["get", "height"],
       "fill-extrusion-base": 0,
+      "fill-extrusion-vertical-gradient": true,
+    },
+  });
+
+  map.addLayer({
+    id: "buildings-outline",
+    type: "line",
+    source: "buildings",
+    paint: {
+      "line-color": "#1f2937",
+      "line-opacity": 0.35,
+      "line-width": 1,
     },
   });
 }
@@ -387,18 +445,22 @@ function ensureShadowLayers(map) {
 }
 
 function getFootprints() {
-  if (state.terraInstance?.getSnapshot) {
-    return state.terraInstance.getSnapshot();
-  }
-  return { type: "FeatureCollection", features: [] };
+  const snapshot = state.terraInstance?.getSnapshot?.();
+  if (!snapshot) return [];
+  if (Array.isArray(snapshot)) return snapshot;
+  if (Array.isArray(snapshot.features)) return snapshot.features;
+  return [];
 }
 
 function updateBuildings() {
   if (!state.map) return;
-  const fc = getFootprints();
-  const features = (fc?.features ?? []).filter(
+  const snapshotFeatures = getFootprints();
+  const features = snapshotFeatures.filter(
     (f) => f.geometry?.type === "Polygon"
   );
+
+  const buildingCountEl = el("buildingCount");
+  if (buildingCountEl) buildingCountEl.textContent = String(features.length);
 
   const enriched = features.map((f) => ({
     ...f,
@@ -486,8 +548,8 @@ function updateShadows() {
   const src = state.map.getSource("shadows");
   if (!src?.setData) return;
 
-  const fc = getFootprints();
-  const features = (fc?.features ?? []).filter(
+  const snapshotFeatures = getFootprints();
+  const features = snapshotFeatures.filter(
     (f) => f.geometry?.type === "Polygon"
   );
   const dtUtc = getCurrentDateTimeUtc();
@@ -497,6 +559,11 @@ function updateShadows() {
   const shadowFeatures = [];
   let maxShadow = 0;
   let firstSun = null;
+
+  const normalizeRad = (rad) => {
+    const t = rad % (2 * Math.PI);
+    return t < 0 ? t + 2 * Math.PI : t;
+  };
 
   for (const f of features) {
     const ring = f.geometry.coordinates[0];
@@ -509,9 +576,9 @@ function updateShadows() {
 
     if (altitude <= 0.001) continue;
 
-    const sunBearing =
-      (azimuth + Math.PI + 2 * Math.PI) % (2 * Math.PI);
-    const shadowBearing = (sunBearing + Math.PI) % (2 * Math.PI);
+    // SunCalc azimuth は「南=0、西=+」(ラジアン)。bearing(北=0, 時計回り)へ変換する。
+    const sunBearing = normalizeRad(azimuth + Math.PI);
+    const shadowBearing = normalizeRad(sunBearing + Math.PI);
     const L = state.height / Math.tan(altitude);
     maxShadow = Math.max(maxShadow, L);
 
@@ -553,15 +620,23 @@ function updateShadows() {
 
   src.setData({ type: "FeatureCollection", features: shadowFeatures });
 
+  const noteEl = el("sunNote");
   if (firstSun) {
     const altitudeDeg = (firstSun.altitude * 180) / Math.PI;
     const bearingDeg =
-      ((firstSun.azimuth + Math.PI) * 180) / Math.PI % 360;
+      (normalizeRad(firstSun.azimuth + Math.PI) * 180) / Math.PI;
     el("sunAltitude").textContent = `${round(altitudeDeg, 1)}°`;
     el("sunAzimuth").textContent = `${round(bearingDeg, 1)}°`;
+    if (noteEl) {
+      noteEl.textContent =
+        altitudeDeg <= 0
+          ? "日没中のため影は表示されません（時刻を日中に変更してください）"
+          : "";
+    }
   } else {
     el("sunAltitude").textContent = "—";
     el("sunAzimuth").textContent = "—";
+    if (noteEl) noteEl.textContent = "建物が未設定です";
   }
 
   el("shadowLength").textContent =
