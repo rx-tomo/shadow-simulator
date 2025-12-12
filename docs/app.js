@@ -181,12 +181,14 @@ async function searchPlace(map) {
 }
 
 function initMap() {
-  // GitHub Pages 等の https 配信では MapLibre のデフォルト worker（blob）で動くため、
-  // cross-origin の worker URL は設定しない。file:// の場合のみ CSP worker を使う。
+  // MapLibre v5 は CSP worker を必要とする環境があるため、常に worker URL を明示する。
+  // https 配信時は同一オリジンに置いた worker を使い、file:// の場合は CDN の CSP worker を使う。
   if (location.protocol === "file:") {
     maplibregl.setWorkerUrl(
       `https://cdn.jsdelivr.net/npm/maplibre-gl@${MAPLIBRE_VERSION}/dist/maplibre-gl-csp-worker.js`
     );
+  } else {
+    maplibregl.setWorkerUrl("./maplibre-gl-csp-worker.js");
   }
 
   const map = new maplibregl.Map({
