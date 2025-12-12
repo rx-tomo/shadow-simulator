@@ -1,5 +1,5 @@
 const MAPLIBRE_VERSION = "5.13.0";
-const APP_BUILD = "20251212-2";
+const APP_BUILD = "20251212-3";
 
 const state = {
   floorHeight: 3.1,
@@ -301,11 +301,13 @@ function initTerraDraw(map) {
     stopOrbit();
     disableMapInteractions();
     draw.setMode("angled-rectangle");
+    el("drawHint")?.classList.remove("hidden");
   });
 
   el("selectButton").addEventListener("click", () => {
     enableMapInteractions();
     draw.setMode("select");
+    el("drawHint")?.classList.add("hidden");
   });
   el("deleteButton").addEventListener("click", () => {
     if (typeof draw.clear === "function") {
