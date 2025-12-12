@@ -180,15 +180,9 @@ async function searchPlace(map) {
 }
 
 function initMap() {
-  // MapLibre v5 は CSP worker を必要とする環境があるため、常に worker URL を明示する。
-  // https 配信時は同一オリジンに置いた worker を使い、file:// の場合は CDN の CSP worker を使う。
-  if (location.protocol === "file:") {
-    maplibregl.setWorkerUrl(
-      `https://cdn.jsdelivr.net/npm/maplibre-gl@${MAPLIBRE_VERSION}/dist/maplibre-gl-csp-worker.js`
-    );
-  } else {
-    maplibregl.setWorkerUrl("./maplibre-gl-csp-worker.js");
-  }
+  // MapLibre v5 は環境によって CSP worker が必要なため、同一ディレクトリの worker を使う。
+  // file:// でも動く可能性があるが、ブラウザ制限で動かない場合はHTTP配信（serve.command）を推奨。
+  maplibregl.setWorkerUrl("./maplibre-gl-csp-worker.js");
 
   const map = new maplibregl.Map({
     container: "map",
