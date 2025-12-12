@@ -136,6 +136,10 @@ input[type="range"] {
   flex-wrap: wrap;
 }
 
+.hidden {
+  display: none !important;
+}
+
 .two-col {
   grid-template-columns: 1fr 1fr;
   gap: 10px;

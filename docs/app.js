@@ -1,10 +1,14 @@
 const MAPLIBRE_VERSION = "5.13.0";
-const APP_BUILD = "20251212-4";
+const APP_BUILD = "20251212-6";
 
 const state = {
   floorHeight: 3.1,
-  height: 6.2,
-  floors: 2,
+  defaultHeight: 6.2,
+  defaultFloors: 2,
+  uiHeight: 6.2,
+  uiFloors: 2,
+  selectedFeatureIds: new Set(),
+  activeMode: "render", // render | select | angled-rectangle
   timezone: "Asia/Tokyo",
   orbiting: false,
   orbitTimer: null,
@@ -25,26 +29,26 @@ function round(value, digits = 1) {
 
 function syncHeightFloors(from) {
   if (from === "height") {
-    state.height = clamp(Number(el("heightInput").value), 1, 500);
-    state.floors = clamp(
-      Math.round(state.height / state.floorHeight),
+    state.uiHeight = clamp(Number(el("heightInput").value), 1, 500);
+    state.uiFloors = clamp(
+      Math.round(state.uiHeight / state.floorHeight),
       1,
       100
     );
   } else if (from === "floors") {
-    state.floors = clamp(Number(el("floorsInput").value), 1, 100);
-    state.height = clamp(state.floors * state.floorHeight, 1, 500);
+    state.uiFloors = clamp(Number(el("floorsInput").value), 1, 100);
+    state.uiHeight = clamp(state.uiFloors * state.floorHeight, 1, 500);
   } else if (from === "floorHeight") {
     state.floorHeight = clamp(Number(el("floorHeightInput").value), 2.5, 5.0);
-    state.height = clamp(state.floors * state.floorHeight, 1, 500);
+    state.uiHeight = clamp(state.uiFloors * state.floorHeight, 1, 500);
   }
 
-  el("heightInput").value = String(round(state.height, 1));
-  el("heightRange").value = String(round(state.height, 1));
-  el("floorsInput").value = String(state.floors);
-  el("floorsRange").value = String(state.floors);
+  el("heightInput").value = String(round(state.uiHeight, 1));
+  el("heightRange").value = String(round(state.uiHeight, 1));
+  el("floorsInput").value = String(state.uiFloors);
+  el("floorsRange").value = String(state.uiFloors);
 
-  updateBuildings();
+  applyUiToSelectionOrDefaults();
 }
 
 function initDateTimeControls() {
@@ -224,7 +228,7 @@ function initTerraDraw(map) {
     prefixId: "td",
   });
 
-  const disableMapInteractions = () => {
+  const disableAllMapInteractions = () => {
     try {
       map.stop?.();
       if (map.dragPan?.isEnabled()) map.dragPan.disable();
@@ -240,7 +244,7 @@ function initTerraDraw(map) {
     }
   };
 
-  const enableMapInteractions = () => {
+  const enableAllMapInteractions = () => {
     try {
       if (map.dragPan && !map.dragPan.isEnabled()) map.dragPan.enable();
       if (map.dragRotate && !map.dragRotate.isEnabled()) map.dragRotate.enable();
@@ -250,6 +254,68 @@ function initTerraDraw(map) {
       if (map.keyboard && !map.keyboard.isEnabled()) map.keyboard.enable();
       if (map.touchZoomRotate && !map.touchZoomRotate.isEnabled()) map.touchZoomRotate.enable();
       if (map.touchPitch && !map.touchPitch.isEnabled()) map.touchPitch.enable();
+    } catch {
+      // ignore
+    }
+  };
+
+  const setModeButtonActive = (activeIdOrNull) => {
+    const btnIds = ["drawRectButton", "selectButton"];
+    for (const id of btnIds) {
+      const btn = el(id);
+      if (!btn) continue;
+      const active = id === activeIdOrNull;
+      btn.classList.toggle("btn-primary", active);
+      btn.setAttribute("aria-pressed", active ? "true" : "false");
+    }
+  };
+
+  const enterMode = (modeName) => {
+    state.activeMode = modeName;
+    if (modeName === "angled-rectangle") {
+      disableAllMapInteractions();
+      draw.setMode("angled-rectangle");
+      setModeButtonActive("drawRectButton");
+      el("drawHint")?.classList.remove("hidden");
+    } else if (modeName === "select") {
+      enableAllMapInteractions();
+      draw.setMode("select");
+      setModeButtonActive("selectButton");
+      el("drawHint")?.classList.add("hidden");
+    } else {
+      // render (解除)
+      enableAllMapInteractions();
+      draw.setMode("render");
+      setModeButtonActive(null);
+      el("drawHint")?.classList.add("hidden");
+      // 解除時は選択状態をUIに反映しない（混乱を避ける）
+      state.selectedFeatureIds = new Set();
+      setUiFromDefaults();
+    }
+  };
+
+  const toggleMode = (modeName) => {
+    stopOrbit();
+    if (state.activeMode === modeName) {
+      enterMode("render");
+      return;
+    }
+    enterMode(modeName);
+  };
+
+  const disablePanRotateOnly = () => {
+    try {
+      if (map.dragPan?.isEnabled()) map.dragPan.disable();
+      if (map.dragRotate?.isEnabled()) map.dragRotate.disable();
+    } catch {
+      // ignore
+    }
+  };
+
+  const enablePanRotateOnly = () => {
+    try {
+      if (map.dragPan && !map.dragPan.isEnabled()) map.dragPan.enable();
+      if (map.dragRotate && !map.dragRotate.isEnabled()) map.dragRotate.enable();
     } catch {
       // ignore
     }
@@ -295,19 +361,14 @@ function initTerraDraw(map) {
   });
 
   draw.start();
-  draw.setMode("select");
+  enterMode("render");
 
   el("drawRectButton").addEventListener("click", () => {
-    stopOrbit();
-    disableMapInteractions();
-    draw.setMode("angled-rectangle");
-    el("drawHint")?.classList.remove("hidden");
+    toggleMode("angled-rectangle");
   });
 
   el("selectButton").addEventListener("click", () => {
-    enableMapInteractions();
-    draw.setMode("select");
-    el("drawHint")?.classList.add("hidden");
+    toggleMode("select");
   });
   el("deleteButton").addEventListener("click", () => {
     if (typeof draw.clear === "function") {
@@ -343,13 +404,38 @@ function initTerraDraw(map) {
 
   // 操作完了時にも更新（描画/編集直後の反映を確実にする）
   const canvas = map.getCanvas?.();
+  let panRotateTemporarilyDisabled = false;
+
+  canvas?.addEventListener("pointerdown", (ev) => {
+    // 選択/編集中は「図形を掴んだドラッグ」で地図が動かないようにする
+    if (!state.terraInstance?.getFeaturesAtPointerEvent) return;
+    if (state.activeMode !== "select") return;
+    try {
+      const hits = state.terraInstance.getFeaturesAtPointerEvent(ev) ?? [];
+      const hitPolygon = hits.some((f) => f.geometry?.type === "Polygon");
+      if (hitPolygon) {
+        panRotateTemporarilyDisabled = true;
+        disablePanRotateOnly();
+      }
+    } catch {
+      // ignore
+    }
+  });
   canvas?.addEventListener("pointerup", () => {
     updateBuildings();
     updateShadows();
+    if (panRotateTemporarilyDisabled && state.activeMode === "select") {
+      panRotateTemporarilyDisabled = false;
+      enablePanRotateOnly();
+    }
   });
   canvas?.addEventListener("pointercancel", () => {
     updateBuildings();
     updateShadows();
+    if (panRotateTemporarilyDisabled && state.activeMode === "select") {
+      panRotateTemporarilyDisabled = false;
+      enablePanRotateOnly();
+    }
   });
 
   state.terraInstance = draw;
@@ -455,6 +541,48 @@ function getFootprints() {
   return [];
 }
 
+function setUiFrom(height, floors) {
+  state.uiHeight = clamp(Number(height), 1, 500);
+  state.uiFloors = clamp(Number(floors), 1, 100);
+
+  el("heightInput").value = String(round(state.uiHeight, 1));
+  el("heightRange").value = String(round(state.uiHeight, 1));
+  el("floorsInput").value = String(state.uiFloors);
+  el("floorsRange").value = String(state.uiFloors);
+}
+
+function setUiFromDefaults() {
+  setUiFrom(state.defaultHeight, state.defaultFloors);
+}
+
+function getSelectedFeatureIds(features) {
+  return features
+    .filter((f) => f?.properties?.selected === true)
+    .map((f) => f.id)
+    .filter(Boolean);
+}
+
+function applyUiToSelectionOrDefaults() {
+  // 選択があれば選択対象だけ更新。なければ「今後作る建物のデフォルト」を更新する。
+  const ids = Array.from(state.selectedFeatureIds ?? []);
+  if (ids.length && state.terraInstance?.updateFeatureProperties) {
+    for (const id of ids) {
+      try {
+        state.terraInstance.updateFeatureProperties(id, {
+          height: state.uiHeight,
+          floors: state.uiFloors,
+        });
+      } catch {
+        // ignore
+      }
+    }
+  } else {
+    state.defaultHeight = state.uiHeight;
+    state.defaultFloors = state.uiFloors;
+  }
+  updateBuildings();
+}
+
 function updateBuildings() {
   if (!state.map) return;
   const snapshotFeatures = getFootprints();
@@ -462,17 +590,67 @@ function updateBuildings() {
     (f) => f.geometry?.type === "Polygon"
   );
 
+  // 選択状態の変化を検知して、UIの高さ/階数を選択対象に追従させる
+  if (state.activeMode === "select") {
+    const selected = getSelectedFeatureIds(features);
+    const next = new Set(selected);
+    const prev = state.selectedFeatureIds ?? new Set();
+    const changed =
+      selected.length !== prev.size || selected.some((id) => !prev.has(id));
+    if (changed) {
+      state.selectedFeatureIds = next;
+      if (selected.length) {
+        const first = features.find((f) => f.id === selected[0]);
+        const h = Number(first?.properties?.height);
+        const fl = Number(first?.properties?.floors);
+        if (Number.isFinite(h) && Number.isFinite(fl)) {
+          setUiFrom(h, fl);
+        } else {
+          setUiFromDefaults();
+        }
+      } else {
+        setUiFromDefaults();
+      }
+    }
+  }
+
   const buildingCountEl = el("buildingCount");
   if (buildingCountEl) buildingCountEl.textContent = String(features.length);
 
-  const enriched = features.map((f) => ({
-    ...f,
-    properties: {
-      ...(f.properties || {}),
-      height: state.height,
-      floors: state.floors,
-    },
-  }));
+  // 各建物ごとに height/floors を保持する（未設定はデフォルトを付与）
+  const enriched = features.map((f) => {
+    const currentHeight = Number(f.properties?.height);
+    const currentFloors = Number(f.properties?.floors);
+
+    const height = Number.isFinite(currentHeight)
+      ? clamp(currentHeight, 1, 500)
+      : state.defaultHeight;
+    const floors = Number.isFinite(currentFloors)
+      ? clamp(currentFloors, 1, 100)
+      : clamp(Math.round(height / state.floorHeight), 1, 100);
+
+    // 初回だけ store 側にもプロパティを持たせる（以後は個別編集）
+    if (
+      (!Number.isFinite(currentHeight) || !Number.isFinite(currentFloors)) &&
+      state.terraInstance?.updateFeatureProperties &&
+      f.id
+    ) {
+      try {
+        state.terraInstance.updateFeatureProperties(f.id, { height, floors });
+      } catch {
+        // ignore
+      }
+    }
+
+    return {
+      ...f,
+      properties: {
+        ...(f.properties || {}),
+        height,
+        floors,
+      },
+    };
+  });
 
   const data = { type: "FeatureCollection", features: enriched };
   const src = state.map.getSource("buildings");
@@ -571,6 +749,9 @@ function updateShadows() {
   for (const f of features) {
     const ring = f.geometry.coordinates[0];
     const centroid = polygonCentroid(ring);
+    const buildingHeight = Number.isFinite(Number(f.properties?.height))
+      ? clamp(Number(f.properties?.height), 1, 500)
+      : state.defaultHeight;
 
     const sun = SunCalc.getPosition(dateJs, centroid.lat, centroid.lng);
     const altitude = sun.altitude;
@@ -582,7 +763,7 @@ function updateShadows() {
     // SunCalc azimuth は「南=0、西=+」(ラジアン)。bearing(北=0, 時計回り)へ変換する。
     const sunBearing = normalizeRad(azimuth + Math.PI);
     const shadowBearing = normalizeRad(sunBearing + Math.PI);
-    const L = state.height / Math.tan(altitude);
+    const L = buildingHeight / Math.tan(altitude);
     maxShadow = Math.max(maxShadow, L);
 
     const first = ring[0];
@@ -612,8 +793,8 @@ function updateShadows() {
       type: "Feature",
       geometry: { type: "Polygon", coordinates: [hullRing] },
       properties: {
-        height: state.height,
-        floors: state.floors,
+        height: buildingHeight,
+        floors: Number(f.properties?.floors) || clamp(Math.round(buildingHeight / state.floorHeight), 1, 100),
         shadowLength: L,
         sunBearing,
         altitude,
@@ -715,7 +896,7 @@ function main() {
   setupDateTimeControls();
   setupPlayDay();
   initDateTimeControls();
-  syncHeightFloors("height");
+  setUiFromDefaults();
 
   const map = initMap();
   setupViewControls(map);
