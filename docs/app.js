@@ -1,5 +1,5 @@
 const MAPLIBRE_VERSION = "5.13.0";
-const APP_BUILD = "20251212-3";
+const APP_BUILD = "20251212-4";
 
 const state = {
   floorHeight: 3.1,
@@ -193,10 +193,10 @@ function initMap() {
           type: "raster",
           // tile.openstreetmap.org はCORS制限で黒画面になることがあるため、CORS対応のベースマップを使う
           tiles: [
-            "https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
-            "https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
-            "https://c.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
-            "https://d.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+            "https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
+            "https://b.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
+            "https://c.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
+            "https://d.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
           ],
           tileSize: 256,
           attribution: "© OpenStreetMap contributors © CARTO",
