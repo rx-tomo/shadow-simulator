@@ -224,6 +224,24 @@ function initTerraDraw(map) {
     prefixId: "td",
   });
 
+  const disableMapInteractions = () => {
+    try {
+      if (map.dragPan?.isEnabled()) map.dragPan.disable();
+      if (map.dragRotate?.isEnabled()) map.dragRotate.disable();
+    } catch {
+      // ignore
+    }
+  };
+
+  const enableMapInteractions = () => {
+    try {
+      if (map.dragPan && !map.dragPan.isEnabled()) map.dragPan.enable();
+      if (map.dragRotate && !map.dragRotate.isEnabled()) map.dragRotate.enable();
+    } catch {
+      // ignore
+    }
+  };
+
   const draw = new terraDraw.TerraDraw({
     adapter,
     modes: [
@@ -266,10 +284,16 @@ function initTerraDraw(map) {
   draw.start();
   draw.setMode("select");
 
-  el("drawRectButton").addEventListener("click", () =>
-    draw.setMode("angled-rectangle")
-  );
-  el("selectButton").addEventListener("click", () => draw.setMode("select"));
+  el("drawRectButton").addEventListener("click", () => {
+    stopOrbit();
+    disableMapInteractions();
+    draw.setMode("angled-rectangle");
+  });
+
+  el("selectButton").addEventListener("click", () => {
+    enableMapInteractions();
+    draw.setMode("select");
+  });
   el("deleteButton").addEventListener("click", () => {
     if (typeof draw.clear === "function") {
       draw.clear();
