@@ -221,12 +221,8 @@ function initTerraDraw(map) {
   const terra = window.MaplibreTerradrawControl;
   const TerradrawControl = terra.MaplibreTerradrawControl;
 
-  const defaultModes = terra.getDefaultModeOptions();
-  const modes = Array.isArray(defaultModes)
-    ? defaultModes
-    : Object.values(defaultModes);
-
-  const drawControl = new TerradrawControl({ modes });
+  // defaultControlOptions.modes が配列で初期化されるため、ここでは明示指定せずデフォルトを使う
+  const drawControl = new TerradrawControl();
   map.addControl(drawControl, "top-left");
 
   const instance =
