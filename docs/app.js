@@ -1,5 +1,5 @@
 const MAPLIBRE_VERSION = "5.13.0";
-const APP_BUILD = "20251212-6";
+const APP_BUILD = "20251212-7";
 
 const state = {
   floorHeight: 3.1,
@@ -12,6 +12,9 @@ const state = {
   timezone: "Asia/Tokyo",
   orbiting: false,
   orbitTimer: null,
+  playingDay: false,
+  playDayTimer: null,
+  basemap: "voyager",
   map: null,
   terraInstance: null,
 };
@@ -193,7 +196,7 @@ function initMap() {
     style: {
       version: 8,
       sources: {
-        osm: {
+        cartoVoyager: {
           type: "raster",
           // tile.openstreetmap.org はCORS制限で黒画面になることがあるため、CORS対応のベースマップを使う
           tiles: [
@@ -205,8 +208,44 @@ function initMap() {
           tileSize: 256,
           attribution: "© OpenStreetMap contributors © CARTO",
         },
+        cartoLight: {
+          type: "raster",
+          tiles: [
+            "https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+            "https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+            "https://c.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+            "https://d.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+          ],
+          tileSize: 256,
+          attribution: "© OpenStreetMap contributors © CARTO",
+        },
+        cartoDark: {
+          type: "raster",
+          tiles: [
+            "https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
+            "https://b.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
+            "https://c.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
+            "https://d.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
+          ],
+          tileSize: 256,
+          attribution: "© OpenStreetMap contributors © CARTO",
+        },
       },
-      layers: [{ id: "osm", type: "raster", source: "osm" }],
+      layers: [
+        { id: "basemap-voyager", type: "raster", source: "cartoVoyager" },
+        {
+          id: "basemap-light",
+          type: "raster",
+          source: "cartoLight",
+          layout: { visibility: "none" },
+        },
+        {
+          id: "basemap-dark",
+          type: "raster",
+          source: "cartoDark",
+          layout: { visibility: "none" },
+        },
+      ],
     },
     center: [139.767, 35.681],
     zoom: 15,
@@ -218,6 +257,37 @@ function initMap() {
   map.addControl(new maplibregl.ScaleControl({ maxWidth: 120, unit: "metric" }), "bottom-left");
 
   return map;
+}
+
+function setBasemap(map, kind) {
+  const allowed = new Set(["voyager", "light", "dark"]);
+  const next = allowed.has(kind) ? kind : "voyager";
+  state.basemap = next;
+
+  const idByKind = {
+    voyager: "basemap-voyager",
+    light: "basemap-light",
+    dark: "basemap-dark",
+  };
+  const activeId = idByKind[next];
+  for (const layerId of Object.values(idByKind)) {
+    if (!map.getLayer(layerId)) continue;
+    map.setLayoutProperty(
+      layerId,
+      "visibility",
+      layerId === activeId ? "visible" : "none"
+    );
+  }
+}
+
+function setupBasemapControls(map) {
+  const select = el("basemapSelect");
+  if (!select) return;
+  select.value = state.basemap;
+  select.addEventListener("change", () => {
+    stopPlayDay();
+    setBasemap(map, select.value);
+  });
 }
 
 function initTerraDraw(map) {
@@ -739,12 +809,14 @@ function updateShadows() {
 
   const shadowFeatures = [];
   let maxShadow = 0;
-  let firstSun = null;
 
   const normalizeRad = (rad) => {
     const t = rad % (2 * Math.PI);
     return t < 0 ? t + 2 * Math.PI : t;
   };
+
+  const center = state.map.getCenter();
+  const sunForUi = SunCalc.getPosition(dateJs, center.lat, center.lng);
 
   for (const f of features) {
     const ring = f.geometry.coordinates[0];
@@ -756,7 +828,6 @@ function updateShadows() {
     const sun = SunCalc.getPosition(dateJs, centroid.lat, centroid.lng);
     const altitude = sun.altitude;
     const azimuth = sun.azimuth;
-    if (!firstSun) firstSun = sun;
 
     if (altitude <= 0.001) continue;
 
@@ -805,22 +876,25 @@ function updateShadows() {
   src.setData({ type: "FeatureCollection", features: shadowFeatures });
 
   const noteEl = el("sunNote");
-  if (firstSun) {
-    const altitudeDeg = (firstSun.altitude * 180) / Math.PI;
-    const bearingDeg =
-      (normalizeRad(firstSun.azimuth + Math.PI) * 180) / Math.PI;
-    el("sunAltitude").textContent = `${round(altitudeDeg, 1)}°`;
-    el("sunAzimuth").textContent = `${round(bearingDeg, 1)}°`;
-    if (noteEl) {
-      noteEl.textContent =
-        altitudeDeg <= 0
-          ? "日没中のため影は表示されません（時刻を日中に変更してください）"
-          : "";
+  const altitudeDeg = (sunForUi.altitude * 180) / Math.PI;
+  const bearingDeg = (normalizeRad(sunForUi.azimuth + Math.PI) * 180) / Math.PI;
+  el("sunAltitude").textContent = `${round(altitudeDeg, 1)}°`;
+  el("sunAzimuth").textContent = `${round(bearingDeg, 1)}°`;
+
+  const nightOverlay = el("nightOverlay");
+  if (nightOverlay) {
+    if (altitudeDeg <= 0) nightOverlay.classList.remove("hidden");
+    else nightOverlay.classList.add("hidden");
+  }
+
+  if (noteEl) {
+    if (altitudeDeg <= 0) {
+      noteEl.textContent = "夜間（日の出前/日没後）です";
+    } else if (!features.length) {
+      noteEl.textContent = "建物が未設定です";
+    } else {
+      noteEl.textContent = "";
     }
-  } else {
-    el("sunAltitude").textContent = "—";
-    el("sunAzimuth").textContent = "—";
-    if (noteEl) noteEl.textContent = "建物が未設定です";
   }
 
   el("shadowLength").textContent =
@@ -858,34 +932,68 @@ function setupBuildingControls() {
 
 function setupDateTimeControls() {
   el("timeRange").addEventListener("input", () => {
+    stopPlayDay();
     timeRangeToTimeInput();
     updateShadows();
   });
   el("timeInput").addEventListener("input", () => {
+    stopPlayDay();
     timeInputToRange();
     updateShadows();
   });
-  el("dateInput").addEventListener("input", updateShadows);
-  el("resetTimeButton").addEventListener("click", initDateTimeControls);
+  el("dateInput").addEventListener("input", () => {
+    stopPlayDay();
+    updateShadows();
+  });
+  el("resetTimeButton").addEventListener("click", () => {
+    stopPlayDay();
+    initDateTimeControls();
+    updateShadows();
+  });
   el("timezoneSelect").addEventListener("change", () => {
+    stopPlayDay();
     state.timezone = el("timezoneSelect").value;
     initDateTimeControls();
     updateShadows();
   });
 }
 
+function setPlayDayButtonActive(active) {
+  const btn = el("playDayButton");
+  if (!btn) return;
+  btn.classList.toggle("btn-primary", active);
+  btn.setAttribute("aria-pressed", active ? "true" : "false");
+}
+
+function stopPlayDay() {
+  state.playingDay = false;
+  if (state.playDayTimer) {
+    window.clearInterval(state.playDayTimer);
+    state.playDayTimer = null;
+  }
+  setPlayDayButtonActive(false);
+}
+
+function startPlayDay() {
+  stopPlayDay();
+  state.playingDay = true;
+  setPlayDayButtonActive(true);
+  let m = Number(el("timeRange").value);
+  state.playDayTimer = window.setInterval(() => {
+    m = (m + 5) % 1440;
+    el("timeRange").value = String(m);
+    timeRangeToTimeInput();
+    updateShadows();
+    if (m === 0) {
+      stopPlayDay();
+    }
+  }, 120);
+}
+
 function setupPlayDay() {
   el("playDayButton").addEventListener("click", () => {
-    let m = Number(el("timeRange").value);
-    const timer = window.setInterval(() => {
-      m = (m + 5) % 1440;
-      el("timeRange").value = String(m);
-      timeRangeToTimeInput();
-      updateShadows();
-      if (m === 0) {
-        window.clearInterval(timer);
-      }
-    }, 120);
+    if (state.playingDay) stopPlayDay();
+    else startPlayDay();
   });
 }
 
@@ -903,6 +1011,8 @@ function main() {
 
   map.on("load", () => {
     state.map = map;
+    setupBasemapControls(map);
+    setBasemap(map, el("basemapSelect")?.value || state.basemap);
     ensureBuildingLayers(map);
     ensureShadowLayers(map);
     initTerraDraw(map);
