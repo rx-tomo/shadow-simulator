@@ -8,7 +8,6 @@ const state = {
   orbiting: false,
   orbitTimer: null,
   map: null,
-  drawControl: null,
   terraInstance: null,
 };
 
@@ -218,55 +217,78 @@ function initMap() {
 }
 
 function initTerraDraw(map) {
-  const terra = window.MaplibreTerradrawControl;
-  const TerradrawControl = terra.MaplibreTerradrawControl;
-
-  // UMD版ではデフォルトが自動適用されないケースがあるため、公式の defaultControlOptions を明示する
-  const modes = terra.defaultControlOptions?.modes;
-  const drawControl = new TerradrawControl({ modes });
-  map.addControl(drawControl, "top-left");
-
-  const instance =
-    typeof drawControl.getTerraDrawInstance === "function"
-      ? drawControl.getTerraDrawInstance()
-      : drawControl.terradraw;
-
-  const available = terra.AvailableModes;
-  const values = Array.isArray(available) ? available : Object.values(available);
-  const angledRectMode =
-    values.find((v) => /angled/i.test(v) && /rect/i.test(v)) ||
-    values.find((v) => /rect/i.test(v)) ||
-    "angled_rectangle";
-  const selectMode =
-    values.find((v) => /select/i.test(v)) || "select";
-
-  function setMode(mode) {
-    if (typeof drawControl.setMode === "function") {
-      drawControl.setMode(mode);
-      return;
-    }
-    if (instance && typeof instance.setMode === "function") {
-      instance.setMode(mode);
-    }
-  }
-
-  el("drawRectButton").addEventListener("click", () => setMode(angledRectMode));
-  el("selectButton").addEventListener("click", () => setMode(selectMode));
-  el("deleteButton").addEventListener("click", () => {
-    if (instance?.clear) instance.clear();
-    else if (drawControl.clear) drawControl.clear();
+  const adapter = new terraDrawMaplibreGlAdapter.TerraDrawMapLibreGLAdapter({
+    map,
+    renderBelowLayerId: "buildings-fill",
+    coordinatePrecision: 7,
+    prefixId: "td",
   });
 
-  if (instance?.on) {
-    instance.on("finish", updateBuildings);
-    instance.on("change", updateBuildings);
-    instance.on("delete", updateBuildings);
+  const draw = new terraDraw.TerraDraw({
+    adapter,
+    modes: [
+      new terraDraw.TerraDrawRenderMode({ modeName: "render" }),
+      new terraDraw.TerraDrawAngledRectangleMode({
+        modeName: "angled-rectangle",
+      }),
+      new terraDraw.TerraDrawSelectMode({
+        modeName: "select",
+        flags: {
+          polygon: {
+            feature: {
+              draggable: true,
+              rotateable: true,
+              scaleable: true,
+              coordinates: {
+                midpoints: true,
+                draggable: true,
+                deletable: true,
+              },
+            },
+          },
+          "angled-rectangle": {
+            feature: {
+              draggable: true,
+              rotateable: true,
+              scaleable: true,
+              coordinates: {
+                midpoints: true,
+                draggable: true,
+                deletable: true,
+              },
+            },
+          },
+        },
+      }),
+    ],
+  });
+
+  draw.start();
+  draw.setMode("select");
+
+  el("drawRectButton").addEventListener("click", () =>
+    draw.setMode("angled-rectangle")
+  );
+  el("selectButton").addEventListener("click", () => draw.setMode("select"));
+  el("deleteButton").addEventListener("click", () => {
+    if (typeof draw.clear === "function") {
+      draw.clear();
+    } else if (typeof draw.removeFeatures === "function") {
+      const ids = (draw.getSnapshot()?.features ?? []).map((f) => f.id);
+      if (ids.length) draw.removeFeatures(ids);
+    }
+    updateBuildings();
+  });
+
+  if (typeof draw.on === "function") {
+    draw.on("finish", updateBuildings);
+    draw.on("change", updateBuildings);
+    draw.on("delete", updateBuildings);
   }
 
-  state.drawControl = drawControl;
-  state.terraInstance = instance;
+  state.terraInstance = draw;
 
-  return { drawControl, instance };
+  return draw;
 }
 
 function ensureBuildingLayers(map) {
@@ -336,9 +358,6 @@ function ensureShadowLayers(map) {
 }
 
 function getFootprints() {
-  if (state.drawControl?.getFeatures) {
-    return state.drawControl.getFeatures(true);
-  }
   if (state.terraInstance?.getSnapshot) {
     return state.terraInstance.getSnapshot();
   }
