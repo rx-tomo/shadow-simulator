@@ -1,5 +1,5 @@
 const MAPLIBRE_VERSION = "5.13.0";
-const APP_BUILD = "20251212-7";
+const APP_BUILD = "20251212-8";
 
 const state = {
   floorHeight: 3.1,
@@ -441,13 +441,24 @@ function initTerraDraw(map) {
     toggleMode("select");
   });
   el("deleteButton").addEventListener("click", () => {
-    if (typeof draw.clear === "function") {
+    const selectedIds = Array.from(state.selectedFeatureIds ?? []).filter(
+      Boolean
+    );
+    if (selectedIds.length && typeof draw.removeFeatures === "function") {
+      draw.removeFeatures(selectedIds);
+      state.selectedFeatureIds = new Set();
+      setUiFromDefaults();
+    } else if (typeof draw.clear === "function") {
       draw.clear();
+      state.selectedFeatureIds = new Set();
+      setUiFromDefaults();
     } else if (typeof draw.removeFeatures === "function") {
       const snap = draw.getSnapshot?.();
       const features = Array.isArray(snap) ? snap : snap?.features ?? [];
       const ids = features.map((f) => f.id).filter(Boolean);
       if (ids.length) draw.removeFeatures(ids);
+      state.selectedFeatureIds = new Set();
+      setUiFromDefaults();
     }
     updateBuildings();
   });
