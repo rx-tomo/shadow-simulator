@@ -181,7 +181,9 @@ async function searchPlace(map) {
 }
 
 function initMap() {
-  if (location.protocol !== "file:") {
+  // GitHub Pages 等の https 配信では MapLibre のデフォルト worker（blob）で動くため、
+  // cross-origin の worker URL は設定しない。file:// の場合のみ CSP worker を使う。
+  if (location.protocol === "file:") {
     maplibregl.setWorkerUrl(
       `https://cdn.jsdelivr.net/npm/maplibre-gl@${MAPLIBRE_VERSION}/dist/maplibre-gl-csp-worker.js`
     );
