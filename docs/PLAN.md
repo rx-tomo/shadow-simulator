@@ -7,9 +7,9 @@
 - サイドパネルUI（場所/建物/日時/表示/結果）
 
 ### Phase 2: 回転矩形の描画・編集
-- `@watergis/maplibre-gl-terradraw` を使用
-- 描画モード: Angled Rectangle（回転矩形）
-- 選択・編集（移動/回転/拡縮）
+- TerraDraw（UMD）+ MapLibre Adapter を使用
+- 描画モード: 矩形（クリック→移動→クリック）
+- 選択・編集（移動/拡縮）
 
 ### Phase 3: 高さ↔階数連動、日時/タイムゾーン
 - 高さ(m)と階数(1–100)の双方向同期
@@ -31,7 +31,8 @@
 
 ## 主要依存
 - MapLibre GL JS（CDN）
-- OpenStreetMap raster tiles
-- MapLibre GL Terra Draw（回転矩形）
+- CARTO Basemaps raster tiles（voyager/light/dark）
+- TerraDraw + terra-draw-maplibre-gl-adapter（矩形）
 - Luxon（タイムゾーン/DST）
 - SunCalc（太陽位置）
+- Nominatim（地名/住所検索）
