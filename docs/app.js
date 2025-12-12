@@ -221,9 +221,12 @@ function initTerraDraw(map) {
   const terra = window.MaplibreTerradrawControl;
   const TerradrawControl = terra.MaplibreTerradrawControl;
 
-  const drawControl = new TerradrawControl({
-    modes: terra.getDefaultModeOptions(),
-  });
+  const defaultModes = terra.getDefaultModeOptions();
+  const modes = Array.isArray(defaultModes)
+    ? defaultModes
+    : Object.values(defaultModes);
+
+  const drawControl = new TerradrawControl({ modes });
   map.addControl(drawControl, "top-left");
 
   const instance =
