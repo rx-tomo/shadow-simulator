@@ -280,11 +280,22 @@ function initTerraDraw(map) {
     updateBuildings();
   });
 
-  if (typeof draw.on === "function") {
-    draw.on("finish", updateBuildings);
-    draw.on("change", updateBuildings);
-    draw.on("delete", updateBuildings);
-  }
+  // terra-draw UMD のイベントは ready のみのため、スナップショット差分で更新を検知する
+  let lastSignature = "";
+  window.setInterval(() => {
+    const snapshot = draw.getSnapshot?.();
+    if (!snapshot) return;
+    const polys = (snapshot.features ?? []).filter(
+      (f) => f.geometry?.type === "Polygon"
+    );
+    const signature = JSON.stringify(
+      polys.map((f) => f.geometry.coordinates)
+    );
+    if (signature !== lastSignature) {
+      lastSignature = signature;
+      updateBuildings();
+    }
+  }, 500);
 
   state.terraInstance = draw;
 
