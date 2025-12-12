@@ -1,4 +1,5 @@
 const MAPLIBRE_VERSION = "5.13.0";
+const APP_BUILD = "20251212-2";
 
 const state = {
   floorHeight: 3.1,
@@ -181,7 +182,7 @@ async function searchPlace(map) {
 function initMap() {
   // MapLibre v5 は環境によって CSP worker が必要なため、同一ディレクトリの worker を使う。
   // file:// でも動く可能性があるが、ブラウザ制限で動かない場合はHTTP配信（serve.command）を推奨。
-  maplibregl.setWorkerUrl("./maplibre-gl-csp-worker.js");
+  maplibregl.setWorkerUrl(`./maplibre-gl-csp-worker.js?v=${APP_BUILD}`);
 
   const map = new maplibregl.Map({
     container: "map",
