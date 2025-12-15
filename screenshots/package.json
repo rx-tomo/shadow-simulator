@@ -1,0 +1,13 @@
+{
+  "name": "shadow-simulator-screenshots",
+  "version": "1.0.0",
+  "description": "Screenshots and GIF animation generator for shadow-simulator",
+  "type": "module",
+  "scripts": {
+    "capture": "node capture.js",
+    "animation": "node capture-animation.js"
+  },
+  "dependencies": {
+    "puppeteer": "^23.0.0"
+  }
+}
