@@ -1,8 +1,14 @@
 # 日影シミュレータ（ブラウザのみ / MVP）
 
+<div align="center">
+  <video src="assets/demo1.mp4" width="45%" autoplay loop muted playsinline></video>
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <video src="assets/demo2.mp4" width="45%" autoplay loop muted playsinline></video>
+</div>
+
 https://rx-tomo.github.io/shadow-simulator/
 
-地図上で敷地（矩形）と建物高さを設定し、指定日時の太陽位置から日影範囲を表示するツールです。  
+地図上で敷地（矩形）と建物高さを設定し、指定日時の太陽位置から日影範囲を表示するツールです。
 サーバ不要の静的アプリとして動作します。
 
 こうしたアプリは他にもあるようですが、探すよりもChatGPTで先に作ってしまいました。
