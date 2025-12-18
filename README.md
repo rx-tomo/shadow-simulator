@@ -1,9 +1,9 @@
 # 日影シミュレータ（ブラウザのみ / MVP）
 
 <div align="center">
-  <video src="assets/demo1.mp4" width="45%" autoplay loop muted playsinline></video>
+  <img src="assets/demo1.gif" width="45%" alt="デモ1"/>
   &nbsp;&nbsp;&nbsp;&nbsp;
-  <video src="assets/demo2.mp4" width="45%" autoplay loop muted playsinline></video>
+  <img src="assets/demo2.gif" width="45%" alt="デモ2"/>
 </div>
 
 https://rx-tomo.github.io/shadow-simulator/
