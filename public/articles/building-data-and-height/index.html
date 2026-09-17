@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>建物の色と高さ表示について｜日影シミュレータ</title>
+  <meta name="description" content="日影シミュレータに表示されるオレンジのPLATEAU建物と青灰色のベースマップ建物の違い、建物高さの出所と精度上の注意点を説明します。">
+  <link rel="canonical" href="https://shadow.datagen-pro.com/articles/building-data-and-height/">
+  <meta property="og:title" content="建物の色と高さ表示について">
+  <meta property="og:description" content="PLATEAU建物とベースマップ建物の違い、表示される高さの出所を説明します。">
+  <meta property="og:image" content="https://shadow.datagen-pro.com/assets/lp-coverage.jpg">
+  <meta property="og:url" content="https://shadow.datagen-pro.com/articles/building-data-and-height/">
+  <meta property="og:type" content="article">
+  <link rel="stylesheet" href="../../seo.css">
+  <script defer src="../../analytics-loader.js?v=20260304-1"></script>
+  <script defer src="../../seo-analytics.js?v=20260512-1"></script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"Article","headline":"建物の色と高さ表示について","description":"PLATEAU建物とベースマップ建物の違い、表示される高さの出所と精度上の注意点。","inLanguage":"ja","datePublished":"2026-08-20","dateModified":"2026-08-20","author":{"@type":"Organization","name":"日影シミュレータ"},"mainEntityOfPage":"https://shadow.datagen-pro.com/articles/building-data-and-height/"}
+  </script>
+</head>
+<body>
+  <nav class="seo-nav"><div class="seo-nav__inner"><a class="seo-logo" href="../../" data-seo-analytics-id="nav_logo_app">日影シミュレータ</a><div class="seo-nav__links"><a href="../plateau-shadow-simulation/" data-seo-analytics-id="nav_plateau_guide">PLATEAUの仕組み</a><a href="../../" data-seo-analytics-id="nav_app_open">地図へ戻る</a></div></div></nav>
+  <main class="seo-article building-guide">
+    <div class="seo-eyebrow">建物データの見方</div>
+    <h1>建物の色と高さ表示について</h1>
+    <p class="seo-lead">地図には、出所の異なる2種類の建物を重ねて表示できます。色と高さが何を表すかを説明します。</p>
+
+    <section class="building-guide__section" aria-labelledby="building-color-title">
+    <h2 id="building-color-title">オレンジと青灰色の違い</h2>
+    <div class="building-guide__comparison">
+      <article class="building-guide__type building-guide__type--plateau">
+        <div class="building-guide__type-label"><span class="building-guide__swatch" aria-hidden="true"></span>オレンジ</div>
+        <h3>PLATEAU建物</h3>
+        <p>国土交通省Project PLATEAUの3D都市モデルを加工した建物です。</p>
+      </article>
+      <article class="building-guide__type building-guide__type--basemap">
+        <div class="building-guide__type-label"><span class="building-guide__swatch" aria-hidden="true"></span>青灰色</div>
+        <h3>ベースマップ建物</h3>
+        <p>地図の背景として配信される建物です。</p>
+      </article>
+    </div>
+    <p>PLATEAU対応地域では、日影計算の主な建物データとしてPLATEAU建物を使用します。ベースマップ建物は、PLATEAUと重複しない建物を補う場合があります。</p>
+    </section>
+
+    <section class="building-guide__section">
+    <h2>建物が重なって見える理由</h2>
+    <p>「PLATEAU建物」と「ベースマップ建物」を両方ONにすると、同じ場所の建物が重なって見える場合があります。データの作成時期、測定方法、建物のまとめ方が異なるため、輪郭や高さが少しずれることもあります。</p>
+    <p>表示設定で片方をOFFにすると、それぞれを分けて確認できます。</p>
+    </section>
+
+    <section class="building-guide__section">
+    <h2>クリックで確認できる高さ</h2>
+    <p>オレンジのPLATEAU建物をクリックしたときに表示される「高さ ○m」は、PLATEAU建物に収録された値です。データ内の <code>measuredHeight</code>、<code>height</code>、<code>z</code> の順に利用できる値を参照します。</p>
+    <p>これはベースマップ建物の高さではありません。現在、青灰色のベースマップ建物には高さのポップアップを表示していません。</p>
+    </section>
+
+    <section class="building-guide__section">
+    <h2>高さデータがない場合</h2>
+    <p>PLATEAU建物に利用できる高さがない場合、ポップアップには「不明」と表示します。一方、影の概算を続けるため、計算時には仮の高さとして5mを使用します。その場合、表示された影は実際の建物高さに基づくものではありません。</p>
+    </section>
+
+    <section class="building-guide__section">
+    <h2>どちらが正しいか</h2>
+    <p>PLATEAU対応地域ではPLATEAU建物を優先しますが、どちらも現地の最新状況を保証するものではありません。建替え、増改築、データの整備年度などにより、現在の建物と異なる場合があります。</p>
+    <p class="seo-note">本ツールの高さと影は概算の参考情報です。購入、設計、法規確認など重要な判断では、現地確認、建築図面、公的資料、専門家による確認を併用してください。</p>
+    </section>
+
+    <div class="seo-related">
+      <strong>次に確認する:</strong> <a href="../../" data-seo-analytics-id="related_app_open">地図へ戻る</a> / <a href="../plateau-shadow-simulation/" data-seo-analytics-id="related_plateau_guide">PLATEAUと日影計算の仕組み</a> / <a href="../../updates/2026-08-19-plateau-data/" data-seo-analytics-id="related_data_update">今回のデータ更新</a>
+    </div>
+  </main>
+  <footer class="seo-footer"><div class="seo-container"><p>&copy; 日影シミュレータ</p></div></footer>
+</body>
+</html>

@@ -1,0 +1,42 @@
+name: 不具合報告
+description: 日影シミュレータの不具合を報告します。
+title: "[Bug] "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Issueは公開されます。氏名、メールアドレス、顧客情報、未公開URLなどの個人情報・機密情報を書かないでください。
+  - type: checkboxes
+    id: privacy_confirmation
+    attributes:
+      label: 公開前の確認
+      options:
+        - label: 本文・URL・画像に個人情報や機密情報を含めていません。
+          required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: 起きたこと
+      description: 何をした時に、何が起きたかを書いてください。
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期待していた動作
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: ブラウザと端末
+      placeholder: 例）Chrome / macOS、Safari / iPhone
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: 補足
+      description: 公開して問題ないスクリーンショットや再現手順があれば記載してください。

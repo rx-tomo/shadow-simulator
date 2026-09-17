@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Allow: /city/
+
+Sitemap: https://shadow.datagen-pro.com/sitemap.xml

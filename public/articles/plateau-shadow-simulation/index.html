@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PLATEAUデータで日影を確認する仕組み｜3D都市モデルと日影シミュレーション</title>
+  <meta name="description" content="国土交通省PLATEAUの3D都市モデルを使い、建物の高さや形状をもとに日影シミュレーションを行う仕組みを解説します。">
+  <link rel="canonical" href="https://shadow.datagen-pro.com/articles/plateau-shadow-simulation/">
+  <meta property="og:title" content="PLATEAUデータで日影を確認する仕組み">
+  <meta property="og:description" content="PLATEAU 3D都市モデルと日影シミュレーションの関係を解説。">
+  <meta property="og:image" content="https://shadow.datagen-pro.com/assets/lp-coverage.jpg">
+  <meta property="og:url" content="https://shadow.datagen-pro.com/articles/plateau-shadow-simulation/">
+  <meta property="og:type" content="article">
+  <link rel="stylesheet" href="../../seo.css">
+  <script defer src="../../analytics-loader.js?v=20260304-1"></script>
+  <script defer src="../../seo-analytics.js?v=20260512-1"></script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"Article","headline":"PLATEAUデータで日影を確認する仕組み","description":"PLATEAUの3D都市モデルを使った日影確認の仕組み。","inLanguage":"ja","datePublished":"2026-05-11","dateModified":"2026-05-11","author":{"@type":"Organization","name":"日影シミュレータ"},"mainEntityOfPage":"https://shadow.datagen-pro.com/articles/plateau-shadow-simulation/"}
+  </script>
+</head>
+<body>
+  <nav class="seo-nav"><div class="seo-nav__inner"><a class="seo-logo" href="../../" data-seo-analytics-id="nav_logo_app">日影シミュレータ</a><div class="seo-nav__links"><a href="../../hikage-simulation/" data-seo-analytics-id="nav_seo_landing">日影シミュレーション</a><a href="../../" data-seo-analytics-id="nav_app_open">アプリを開く</a></div></div></nav>
+  <main class="seo-article">
+    <div class="seo-eyebrow">PLATEAU</div>
+    <h1>PLATEAUデータで日影を確認する仕組み</h1>
+    <p class="seo-lead">PLATEAUは、国土交通省が推進する3D都市モデルのプロジェクトです。建物の高さや形状を地図上で扱えるため、日影シミュレーションの入力データとして活用できます。</p>
+
+    <h2>日影計算に必要な情報</h2>
+    <p>建物の影を描くには、建物の位置、高さ、外形、日付、時刻、緯度経度から求めた太陽位置が必要です。PLATEAUの建物データを使うと、周辺建物の高さや形状をゼロから入力せずに確認できます。</p>
+
+    <h2>日影シミュレータでの使い方</h2>
+    <ul>
+      <li>地図を移動して確認したい場所を表示する</li>
+      <li>対応エリアではPLATEAU建物が地図上に重なる</li>
+      <li>日付と時刻を変えると、建物から伸びる影が更新される</li>
+      <li>任意の建物も追加して、計画段階の影を試せる</li>
+    </ul>
+
+    <h2>LOD1/LOD2と精度の考え方</h2>
+    <p>PLATEAUデータには都市やエリアによって詳細度の違いがあります。LOD1は建物を箱型に近い形で表現するため、屋根形状や細部までは反映されない場合があります。日影シミュレータは参考確認に向いたツールとして、素早く全体像を把握することを重視しています。</p>
+
+    <p class="seo-note">データ未整備エリア、樹木、仮設物、バルコニー形状などは反映されない場合があります。重要な判断では現地確認や専門家の確認を併用してください。</p>
+
+    <div class="seo-related">
+      <strong>関連:</strong> <a href="../../hikage-simulation/" data-seo-analytics-id="related_seo_landing">日影シミュレーションを無料で確認</a> / <a href="../shadow-simulation-free/" data-seo-analytics-id="related_shadow_simulation_free">無料ツール比較</a>
+    </div>
+  </main>
+  <footer class="seo-footer"><div class="seo-container"><p>&copy; 日影シミュレータ</p></div></footer>
+</body>
+</html>

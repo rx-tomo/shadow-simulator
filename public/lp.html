@@ -1,0 +1,2591 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>日影シミュレーション無料｜住所または地図で日当たりと影を確認</title>
+<meta name="description" content="無料の日影シミュレーション。住所を入力するか地図で場所を選び、PLATEAUの3D都市モデルで日当たりと建物の影を確認できます。登録不要、ブラウザだけで使えます。">
+<link rel="canonical" href="https://shadow.datagen-pro.com/lp">
+<meta property="og:title" content="日影シミュレーション無料｜住所または地図で日当たりと影を確認">
+<meta property="og:description" content="住所または地図から場所を選び、無料で日当たりと建物の影を確認できるPLATEAU対応Webツール。登録不要、ブラウザだけで使えます。">
+<meta property="og:image" content="https://shadow.datagen-pro.com/assets/lp-hero.jpg">
+<meta property="og:url" content="https://shadow.datagen-pro.com/lp">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="日影シミュレーション無料｜住所または地図で日当たりと影を確認">
+<meta name="twitter:description" content="住所または地図から、無料で日当たりと建物の影を確認できるPLATEAU対応Webツール。">
+<meta name="twitter:image" content="https://shadow.datagen-pro.com/assets/lp-hero.jpg">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "@id": "https://shadow.datagen-pro.com/#webapp",
+      "name": "日影シミュレータ",
+      "url": "https://shadow.datagen-pro.com/",
+      "applicationCategory": "UtilitiesApplication",
+      "operatingSystem": "Web",
+      "inLanguage": "ja",
+      "isAccessibleForFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "JPY"
+      },
+      "description": "PLATEAUの3D都市モデルを使い、建物の日影をブラウザ上で確認できる無料Webアプリケーション。"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://shadow.datagen-pro.com/#software",
+      "name": "日影シミュレータ",
+      "applicationCategory": "DesignApplication",
+      "operatingSystem": "Web",
+      "url": "https://shadow.datagen-pro.com/",
+      "isAccessibleForFree": true
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://shadow.datagen-pro.com/lp#faq",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "日影シミュレータは無料ですか？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "現在公開中の基本シミュレーションは、登録不要・無料で利用できます。将来提供する法人向け案件管理、API、個別支援等は有料となる場合があります。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "建物データの精度はどのくらいですか？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "国土交通省PLATEAUの3D都市モデルを使用しています。ただし樹木や仮設物など反映されない要素があるため、法的な根拠ではなく参考情報として利用してください。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "法人での利用や業務利用は可能ですか？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "MITライセンスのオープンソースソフトウェアとして、商用・業務利用も可能です。大量アクセスや組み込み利用の相談はXプロフィールのDMからお問い合わせください。"
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
+<script defer src="./analytics-loader.js?v=20260304-1"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ===== RESET & BASE ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --white: #ffffff;
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --slate-400: #94a3b8;
+  --slate-500: #64748b;
+  --slate-600: #475569;
+  --slate-700: #334155;
+  --slate-800: #1e293b;
+  --slate-900: #0f172a;
+  --indigo-50: #eef2ff;
+  --indigo-100: #e0e7ff;
+  --indigo-200: #c7d2fe;
+  --indigo-500: #6366f1;
+  --indigo-600: #4f46e5;
+  --indigo-700: #4338ca;
+  --emerald-50: #ecfdf5;
+  --emerald-100: #d1fae5;
+  --emerald-500: #10b981;
+  --emerald-600: #059669;
+  --emerald-700: #047857;
+  --amber-500: #f59e0b;
+  --red-500: #ef4444;
+  --font-sans: 'Inter', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-jp: 'Noto Sans JP', 'Inter', sans-serif;
+  --font-mono: 'SF Mono', 'Fira Code', 'Fira Mono', 'Roboto Mono', monospace;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-jp);
+  color: var(--slate-800);
+  background: var(--white);
+  line-height: 1.7;
+  font-size: 16px;
+  overflow-x: hidden;
+}
+
+/* ===== UTILITIES ===== */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.section {
+  padding: 96px 0;
+}
+
+.section--gray {
+  background: var(--gray-50);
+}
+
+.section--dark {
+  background: var(--slate-900);
+  color: var(--white);
+}
+
+.section-label {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--indigo-600);
+  margin-bottom: 12px;
+  display: block;
+}
+
+.section--dark .section-label {
+  color: var(--indigo-200);
+}
+
+.section-title {
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 700;
+  line-height: 1.3;
+  margin-bottom: 16px;
+  letter-spacing: 0;
+}
+
+.section-desc {
+  font-size: 17px;
+  color: var(--slate-500);
+  max-width: 640px;
+  line-height: 1.8;
+}
+
+.section--dark .section-desc {
+  color: var(--slate-400);
+}
+
+/* Tabular numbers for data */
+.tabular {
+  font-family: var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+
+/* ===== NAVIGATION ===== */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--gray-200);
+  transition: box-shadow 0.3s ease;
+}
+
+.nav.scrolled {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.nav__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.nav__logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--slate-900);
+}
+
+.nav__logo-icon {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, var(--indigo-600), var(--indigo-500));
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 16px;
+}
+
+.nav__logo-text {
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0;
+}
+
+.nav__links {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  list-style: none;
+}
+
+.nav__links a {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--slate-600);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.nav__links a:hover {
+  color: var(--slate-900);
+}
+
+.nav__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  background: var(--indigo-600);
+  color: white !important;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.nav__cta:hover {
+  background: var(--indigo-700);
+  transform: translateY(-1px);
+}
+
+.nav__mobile-toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  color: var(--slate-700);
+}
+
+.nav__mobile-toggle svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* ===== HERO ===== */
+.hero {
+  padding: 140px 0 80px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 0%, rgba(99, 102, 241, 0.04), transparent),
+    linear-gradient(180deg, var(--white) 0%, var(--gray-50) 100%);
+  z-index: 0;
+}
+
+/* Grid dots background */
+.hero::after {
+  content: '';
+  position: absolute;
+  top: 80px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: radial-gradient(circle, var(--gray-300) 1px, transparent 1px);
+  background-size: 32px 32px;
+  opacity: 0.3;
+  z-index: 0;
+}
+
+.hero__content {
+  position: relative;
+  z-index: 1;
+}
+
+.hero__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(360px, 1.08fr);
+  gap: 48px;
+  align-items: center;
+}
+
+.hero__copy {
+  min-width: 0;
+}
+
+.hero__visual {
+  position: relative;
+}
+
+.hero__visual::before {
+  content: '';
+  position: absolute;
+  inset: 24px -18px -18px 42px;
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.18), rgba(16, 185, 129, 0.12));
+  border-radius: 28px;
+  filter: blur(18px);
+  z-index: -1;
+}
+
+.hero__image {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  border-radius: 24px;
+  box-shadow: 0 24px 70px -24px rgba(15, 23, 42, 0.35);
+}
+
+.hero__image-caption {
+  position: absolute;
+  right: 18px;
+  bottom: 18px;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
+  color: var(--slate-700);
+  font-size: 12px;
+  font-weight: 700;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.14);
+  backdrop-filter: blur(16px);
+}
+
+.hero__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px 6px 8px;
+  background: var(--emerald-50);
+  border: 1px solid var(--emerald-100);
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--emerald-700);
+  margin-bottom: 32px;
+}
+
+.hero__badge-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--emerald-500);
+  border-radius: 50%;
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(0.85); }
+}
+
+.hero__title {
+  font-size: clamp(36px, 5.5vw, 60px);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: 0;
+  margin-bottom: 24px;
+  max-width: 800px;
+}
+
+.hero__title-accent {
+  background: linear-gradient(135deg, var(--indigo-600), var(--indigo-500));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero__subtitle {
+  font-size: 18px;
+  color: var(--slate-500);
+  max-width: 580px;
+  margin-bottom: 40px;
+  line-height: 1.8;
+}
+
+.hero__actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 64px;
+  flex-wrap: wrap;
+}
+
+.hero__guide-links {
+  margin: -32px 0 32px;
+  font-size: 15px;
+  color: var(--slate-500);
+  line-height: 1.8;
+}
+
+.hero__guide-links ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hero__guide-links a {
+  color: var(--indigo-600);
+  font-weight: 600;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 28px;
+  font-family: var(--font-jp);
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn--primary {
+  background: var(--indigo-600);
+  color: white;
+  box-shadow: 0 1px 2px rgba(79, 70, 229, 0.2), 0 4px 12px rgba(79, 70, 229, 0.15);
+}
+
+.btn--primary:hover {
+  background: var(--indigo-700);
+  box-shadow: 0 1px 2px rgba(79, 70, 229, 0.2), 0 8px 20px rgba(79, 70, 229, 0.2);
+  transform: translateY(-1px);
+}
+
+.btn--secondary {
+  background: var(--white);
+  color: var(--slate-700);
+  border: 1px solid var(--gray-300);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+
+.btn--secondary:hover {
+  background: var(--gray-50);
+  border-color: var(--gray-400);
+  transform: translateY(-1px);
+}
+
+.btn--ghost {
+  background: transparent;
+  color: var(--slate-600);
+  padding: 14px 16px;
+}
+
+.btn--ghost:hover {
+  color: var(--indigo-600);
+}
+
+.btn--sm {
+  padding: 10px 20px;
+  font-size: 14px;
+  border-radius: 8px;
+}
+
+.btn--white {
+  background: var(--white);
+  color: var(--indigo-600);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+}
+
+.btn--white:hover {
+  background: var(--gray-50);
+  transform: translateY(-1px);
+}
+
+.btn svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.hero__reassurance {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.hero__reassurance-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--slate-500);
+}
+
+.hero__reassurance-item svg {
+  width: 16px;
+  height: 16px;
+  color: var(--emerald-500);
+  flex-shrink: 0;
+}
+
+/* ===== STATS BAR ===== */
+.stats-bar {
+  padding: 48px 0;
+  border-top: 1px solid var(--gray-200);
+  border-bottom: 1px solid var(--gray-200);
+  background: var(--white);
+}
+
+.stats-bar__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 32px;
+}
+
+.stat-card {
+  text-align: center;
+  padding: 8px 0;
+}
+
+.stat-card__number {
+  font-family: var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  font-size: clamp(40px, 5vw, 56px);
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 1;
+  color: var(--slate-900);
+  margin-bottom: 8px;
+}
+
+.stat-card__number .unit {
+  font-size: 0.5em;
+  font-weight: 600;
+  color: var(--indigo-500);
+}
+
+.stat-card__label {
+  font-size: 14px;
+  color: var(--slate-500);
+  font-weight: 500;
+}
+
+/* ===== FEATURE OVERVIEW ===== */
+.dashboard-section {
+  padding: 96px 0;
+  background: var(--gray-50);
+}
+
+.feature-grid {
+  margin-top: 48px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.feature-card {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: 12px;
+  padding: 24px;
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+
+.feature-card:hover {
+  border-color: var(--indigo-200);
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
+  transform: translateY(-2px);
+}
+
+.feature-card__eyebrow {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--indigo-600);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.feature-card__title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--slate-900);
+  line-height: 1.4;
+}
+
+.feature-card__desc {
+  color: var(--slate-500);
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.feature-card__meta {
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid var(--gray-100);
+  color: var(--slate-500);
+  font-size: 13px;
+}
+
+/* ===== COMPARISON TABLE ===== */
+.comparison {
+  padding: 96px 0;
+}
+
+.comparison-table-wrap {
+  margin-top: 48px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.comparison-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 15px;
+}
+
+.comparison-table thead th {
+  padding: 16px 24px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--slate-500);
+  border-bottom: 2px solid var(--gray-200);
+  white-space: nowrap;
+}
+
+.comparison-table thead th:nth-child(2) {
+  color: var(--indigo-600);
+  background: var(--indigo-50);
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  border-bottom: 2px solid var(--indigo-200);
+}
+
+.comparison-table tbody td {
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--gray-100);
+  vertical-align: middle;
+  transition: background 0.15s;
+}
+
+.comparison-table tbody tr:hover td {
+  background: var(--gray-50);
+}
+
+.comparison-table tbody tr:hover td:nth-child(2) {
+  background: var(--indigo-50);
+}
+
+.comparison-table tbody td:nth-child(2) {
+  background: rgba(238, 242, 255, 0.5);
+  font-weight: 500;
+}
+
+.comparison-table tbody td:first-child {
+  font-weight: 600;
+  color: var(--slate-700);
+  white-space: nowrap;
+}
+
+.comparison-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.comparison-table tbody tr:last-child td:nth-child(2) {
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+.check-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  background: var(--emerald-100);
+  color: var(--emerald-600);
+  border-radius: 50%;
+  font-size: 13px;
+}
+
+.cross-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  background: var(--gray-100);
+  color: var(--gray-400);
+  border-radius: 50%;
+  font-size: 13px;
+}
+
+/* ===== PROCESS FLOW ===== */
+.process {
+  padding: 96px 0;
+  background: var(--gray-50);
+}
+
+.process__grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto 1fr;
+  gap: 0;
+  align-items: flex-start;
+  margin-top: 56px;
+}
+
+.process__step {
+  text-align: center;
+  padding: 0 16px;
+}
+
+.process__step-number {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--indigo-600);
+  color: white;
+  border-radius: 16px;
+  font-family: var(--font-sans);
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0 auto 20px;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+}
+
+.process__step-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: var(--slate-800);
+}
+
+.process__step-desc {
+  font-size: 14px;
+  color: var(--slate-500);
+  line-height: 1.7;
+}
+
+.process__connector {
+  display: flex;
+  align-items: center;
+  padding-top: 20px;
+  color: var(--gray-300);
+}
+
+.process__connector svg {
+  width: 32px;
+  height: 32px;
+}
+
+/* ===== COVERAGE MAP ===== */
+.coverage {
+  padding: 96px 0;
+}
+
+.coverage__layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: center;
+  margin-top: 48px;
+}
+
+.japan-map {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3/4;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.japan-map--image {
+  aspect-ratio: 16 / 9;
+  max-width: none;
+  border: 1px solid var(--gray-200);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 24px 60px -30px rgba(15, 23, 42, 0.28);
+}
+
+.japan-map--image svg {
+  display: none;
+}
+
+.coverage__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 360px;
+  object-fit: cover;
+}
+
+.japan-map__grid {
+  display: grid;
+  grid-template-columns: repeat(20, 1fr);
+  grid-template-rows: repeat(28, 1fr);
+  gap: 2px;
+  width: 100%;
+  height: 100%;
+}
+
+.map-dot {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--gray-200);
+  transition: all 0.3s ease;
+}
+
+.map-dot--active {
+  background: var(--indigo-500);
+  animation: mapPulse 3s ease-in-out infinite;
+}
+
+.map-dot--active:nth-child(odd) {
+  animation-delay: 0.5s;
+}
+
+.map-dot--highlight {
+  background: var(--indigo-600);
+  box-shadow: 0 0 8px rgba(99, 102, 241, 0.4);
+}
+
+@keyframes mapPulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+.coverage__info h3 {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.coverage__info p {
+  color: var(--slate-500);
+  margin-bottom: 24px;
+  line-height: 1.8;
+}
+
+.coverage-stat-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.coverage-stat-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 15px;
+}
+
+.coverage-stat-list__icon {
+  width: 40px;
+  height: 40px;
+  background: var(--indigo-50);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--indigo-600);
+  flex-shrink: 0;
+}
+
+.coverage-stat-list__icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.coverage-stat-list strong {
+  font-family: var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ===== DATA UPDATE ===== */
+.data-update {
+  padding: 0 0 96px;
+}
+
+.data-update__panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 32px;
+  align-items: center;
+  padding: 32px;
+  border: 1px solid var(--indigo-200);
+  border-radius: 16px;
+  background: var(--indigo-50);
+}
+
+.data-update__date {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--indigo-700);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.data-update__title {
+  margin-bottom: 10px;
+  color: var(--slate-900);
+  font-size: clamp(22px, 3vw, 30px);
+  line-height: 1.35;
+}
+
+.data-update__desc {
+  max-width: 760px;
+  color: var(--slate-600);
+  font-size: 15px;
+}
+
+.data-update__metrics {
+  display: flex;
+  gap: 24px;
+  margin-top: 20px;
+  padding: 0;
+  list-style: none;
+}
+
+.data-update__metrics li {
+  color: var(--slate-600);
+  font-size: 13px;
+}
+
+.data-update__metrics strong {
+  display: block;
+  color: var(--slate-900);
+  font-family: var(--font-sans);
+  font-size: 22px;
+  font-variant-numeric: tabular-nums;
+}
+
+.data-update__link {
+  white-space: nowrap;
+}
+
+/* ===== TECH SPECS ===== */
+.tech-specs {
+  padding: 96px 0;
+  background: var(--gray-50);
+}
+
+.specs-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 48px;
+}
+
+.spec-card {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: 12px;
+  padding: 28px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.spec-card:hover {
+  border-color: var(--indigo-200);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+}
+
+.spec-card__icon {
+  width: 44px;
+  height: 44px;
+  background: var(--indigo-50);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--indigo-600);
+  margin-bottom: 16px;
+}
+
+.spec-card__icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.spec-card__title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--slate-800);
+}
+
+.spec-card__desc {
+  font-size: 14px;
+  color: var(--slate-500);
+  line-height: 1.7;
+}
+
+/* ===== USE CASE MATRIX ===== */
+.usecases {
+  padding: 96px 0;
+}
+
+.usecase-tabs {
+  display: flex;
+  gap: 4px;
+  margin-top: 48px;
+  margin-bottom: 32px;
+  background: var(--gray-100);
+  border-radius: 12px;
+  padding: 4px;
+  width: fit-content;
+}
+
+.usecase-tab {
+  padding: 10px 24px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  font-family: var(--font-jp);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--slate-600);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.usecase-tab.active {
+  background: var(--white);
+  color: var(--slate-900);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  font-weight: 600;
+}
+
+.usecase-tab:hover:not(.active) {
+  color: var(--slate-800);
+}
+
+.usecase-panels {
+  position: relative;
+}
+
+.usecase-panel {
+  display: none;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.usecase-panel.active {
+  display: grid;
+}
+
+.usecase-card {
+  background: var(--gray-50);
+  border: 1px solid var(--gray-100);
+  border-radius: 12px;
+  padding: 28px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.usecase-card:hover {
+  border-color: var(--indigo-200);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.usecase-card__role {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--indigo-600);
+  margin-bottom: 8px;
+}
+
+.usecase-card__title {
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: var(--slate-800);
+}
+
+.usecase-card__desc {
+  font-size: 14px;
+  color: var(--slate-500);
+  line-height: 1.7;
+}
+
+/* ===== FAQ ===== */
+.faq {
+  padding: 96px 0;
+  background: var(--gray-50);
+}
+
+.faq__list {
+  max-width: 768px;
+  margin: 48px auto 0;
+}
+
+.faq-item {
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.faq-item:first-child {
+  border-top: 1px solid var(--gray-200);
+}
+
+.faq-item__trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-jp);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--slate-800);
+  text-align: left;
+  gap: 16px;
+}
+
+.faq-item__trigger:hover {
+  color: var(--indigo-600);
+}
+
+.faq-item__icon {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--gray-100);
+  color: var(--slate-500);
+  transition: transform 0.3s, background 0.2s;
+  font-size: 18px;
+  font-weight: 400;
+}
+
+.faq-item.open .faq-item__icon {
+  transform: rotate(45deg);
+  background: var(--indigo-100);
+  color: var(--indigo-600);
+}
+
+.faq-item__content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease, padding 0.3s ease;
+}
+
+.faq-item.open .faq-item__content {
+  max-height: 400px;
+  padding-bottom: 20px;
+}
+
+.faq-item__answer {
+  font-size: 15px;
+  color: var(--slate-500);
+  line-height: 1.8;
+  padding-right: 44px;
+}
+
+/* ===== SOCIAL PROOF ===== */
+.social-proof {
+  padding: 96px 0;
+}
+
+.proof-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  margin-top: 48px;
+}
+
+.proof-card {
+  text-align: center;
+  padding: 32px 20px;
+  background: var(--gray-50);
+  border-radius: 12px;
+  border: 1px solid var(--gray-100);
+  transition: border-color 0.2s;
+}
+
+.proof-card:hover {
+  border-color: var(--indigo-200);
+}
+
+.proof-card__icon {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 16px;
+  background: var(--indigo-50);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--indigo-600);
+}
+
+.proof-card__icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.proof-card__title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--slate-800);
+  margin-bottom: 6px;
+}
+
+.proof-card__desc {
+  font-size: 13px;
+  color: var(--slate-500);
+  line-height: 1.6;
+}
+
+/* ===== TRUST BADGES ===== */
+.trust-badges {
+  padding: 48px 0;
+  border-top: 1px solid var(--gray-200);
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.trust-badges__inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 48px;
+  flex-wrap: wrap;
+}
+
+.trust-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--slate-500);
+}
+
+.trust-badge__icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.trust-badge__icon--plateau {
+  background: var(--emerald-50);
+  color: var(--emerald-600);
+}
+
+.trust-badge__icon--oss {
+  background: var(--slate-100);
+  color: var(--slate-700);
+}
+
+.trust-badge__icon--osm {
+  background: var(--indigo-50);
+  color: var(--indigo-600);
+}
+
+/* ===== FINAL CTA ===== */
+.final-cta {
+  padding: 96px 0;
+  background: var(--slate-900);
+  color: var(--white);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.final-cta::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    radial-gradient(ellipse 50% 80% at 50% 100%, rgba(99, 102, 241, 0.15), transparent);
+}
+
+.final-cta__content {
+  position: relative;
+  z-index: 1;
+}
+
+.final-cta__title {
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 800;
+  letter-spacing: 0;
+  margin-bottom: 16px;
+}
+
+.final-cta__desc {
+  font-size: 17px;
+  color: var(--slate-400);
+  margin-bottom: 40px;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.8;
+}
+
+.final-cta__actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 32px;
+}
+
+.final-cta__reassurance {
+  font-size: 13px;
+  color: var(--slate-500);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.final-cta__reassurance svg {
+  width: 14px;
+  height: 14px;
+  color: var(--emerald-500);
+}
+
+/* ===== FOOTER ===== */
+.footer {
+  padding: 48px 0;
+  background: var(--slate-900);
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+.footer__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.footer__copy {
+  font-size: 13px;
+  color: var(--slate-500);
+}
+
+.mobile-cta {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1100;
+  display: none;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+  background: rgba(255, 255, 255, 0.92);
+  border-top: 1px solid var(--gray-200);
+  box-shadow: 0 -10px 30px rgba(15, 23, 42, 0.08);
+  backdrop-filter: blur(16px);
+}
+
+.mobile-cta.visible {
+  display: block;
+}
+
+.mobile-cta__button {
+  width: 100%;
+}
+
+@media (min-width: 769px) {
+  .mobile-cta.visible {
+    display: none;
+  }
+}
+
+.footer__links {
+  display: flex;
+  gap: 24px;
+  list-style: none;
+}
+
+.footer__links a {
+  font-size: 13px;
+  color: var(--slate-500);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footer__links a:hover {
+  color: var(--slate-300);
+}
+
+/* ===== SCROLL ANIMATIONS ===== */
+.fade-up {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.fade-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Stagger children */
+.stagger > .fade-up:nth-child(1) { transition-delay: 0s; }
+.stagger > .fade-up:nth-child(2) { transition-delay: 0.1s; }
+.stagger > .fade-up:nth-child(3) { transition-delay: 0.2s; }
+.stagger > .fade-up:nth-child(4) { transition-delay: 0.3s; }
+.stagger > .fade-up:nth-child(5) { transition-delay: 0.4s; }
+.stagger > .fade-up:nth-child(6) { transition-delay: 0.5s; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1024px) {
+  .feature-grid {
+    grid-template-columns: 1fr;
+  }
+  .specs-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .coverage__layout {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+  .japan-map {
+    max-width: 300px;
+  }
+}
+
+@media (max-width: 768px) {
+  .section { padding: 64px 0; }
+
+  .nav__links { display: none; }
+  .nav__mobile-toggle { display: block; }
+
+  .nav__links.open {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 64px;
+    left: 0;
+    right: 0;
+    background: var(--white);
+    border-bottom: 1px solid var(--gray-200);
+    padding: 16px 24px;
+    gap: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  }
+
+  .hero {
+    padding: 120px 0 60px;
+  }
+
+  .hero__layout {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+
+  .hero__title {
+    font-size: 32px;
+  }
+
+  .hero__actions {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .btn { width: 100%; justify-content: center; }
+
+  .hero__reassurance {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .stats-bar__grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+
+  .comparison-table {
+    font-size: 13px;
+  }
+
+  .comparison-table thead th,
+  .comparison-table tbody td {
+    padding: 12px 14px;
+  }
+
+  .process__grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .process__connector {
+    display: none;
+  }
+
+  .specs-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .usecase-tabs {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .usecase-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .proof-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .trust-badges__inner {
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .data-update {
+    padding-bottom: 64px;
+  }
+
+  .data-update__panel {
+    grid-template-columns: 1fr;
+    padding: 24px;
+  }
+
+  .data-update__metrics {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .data-update__link {
+    width: 100%;
+  }
+
+  .footer__inner {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  body {
+    padding-bottom: 76px;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-bar__grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .stat-card__number {
+    font-size: 36px;
+  }
+
+  .proof-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== NAVIGATION ===== -->
+<nav class="nav" id="nav">
+  <div class="nav__inner">
+    <a href="./" class="nav__logo">
+      <div class="nav__logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      </div>
+      <span class="nav__logo-text">日影シミュレータ</span>
+    </a>
+    <ul class="nav__links" id="navLinks">
+      <li><a href="#features">機能</a></li>
+      <li><a href="#comparison">比較</a></li>
+      <li><a href="#coverage">対応エリア</a></li>
+      <li><a href="#usecases">活用シーン</a></li>
+      <li><a href="#faq">FAQ</a></li>
+      <li><a href="./" class="nav__cta" data-analytics-id="lp_nav_cta" data-entry-cta="nav">無料で始める
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a></li>
+    </ul>
+    <button class="nav__mobile-toggle" id="mobileToggle" aria-label="メニュー">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+  </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section class="hero" id="hero">
+  <div class="container hero__content hero__layout">
+    <div class="hero__copy">
+      <div class="hero__badge">
+        <span class="hero__badge-dot"></span>
+        国土交通省PLATEAU公式データ使用
+      </div>
+
+      <h1 class="hero__title">
+        <span class="hero__title-accent">無料で</span>日当たりと影を確認。<br>住所または地図から日影シミュレーション
+      </h1>
+
+      <p class="hero__subtitle">
+        住所を入力するか地図で場所を選ぶだけ。国土交通省PLATEAUの公式3D都市モデルを使い、ブラウザで日当たりと建物の影を確認できます。登録もインストールも不要です。
+      </p>
+
+      <div class="hero__actions">
+        <a href="./" class="btn btn--primary" data-analytics-id="lp_hero_cta" data-entry-cta="hero">
+          無料で始める
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+        <a href="https://x.com/Igniter1005" class="btn btn--secondary" target="_blank" rel="noopener" data-inquiry-channel="x_dm" data-inquiry-location="lp_hero">
+          <span aria-hidden="true" style="font-family:var(--font-sans);font-weight:800;font-size:18px;line-height:1;">X</span>
+          XのDMで相談する
+        </a>
+        <a href="https://github.com/rx-tomo/shadow-simulator/issues/new/choose" class="btn btn--secondary" target="_blank" rel="noopener" data-inquiry-channel="github_issue" data-inquiry-location="lp_hero">GitHubで不具合・改善提案</a>
+      </div>
+
+      <nav class="hero__guide-links" aria-label="日影シミュレーションの解説">
+        日影の意味や見方を先に確認したい方へ
+        <ul>
+          <li><a href="./hikage-simulation/#difference" data-analytics-id="lp_guide_difference">日影図との違いを知る</a></li>
+          <li><a href="./articles/winter-solstice-shadow/" data-analytics-id="lp_guide_time">時間別の影の見方を知る</a></li>
+          <li><a href="./articles/apartment-sunlight-check/" data-analytics-id="lp_guide_apartment">周辺建物・物件の日当たりを確認する</a></li>
+        </ul>
+      </nav>
+
+      <div class="hero__reassurance">
+        <span class="hero__reassurance-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          登録不要
+        </span>
+        <span class="hero__reassurance-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          メールアドレスも不要
+        </span>
+        <span class="hero__reassurance-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          完全無料
+        </span>
+        <span class="hero__reassurance-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          MIT License
+        </span>
+      </div>
+    </div>
+
+    <div class="hero__visual" aria-label="都市の日影シミュレーションのイメージ">
+      <img src="./assets/lp-hero.jpg" width="1672" height="941" alt="都市の3D建物モデルに冬の日影が投影されるシミュレーションイメージ" class="hero__image" fetchpriority="high">
+      <div class="hero__image-caption">Winter shadow simulation</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== STATS BAR ===== -->
+<section class="stats-bar">
+  <div class="container">
+    <div class="stats-bar__grid stagger">
+      <div class="stat-card fade-up">
+        <div class="stat-card__number tabular"><span class="counter" data-target="306">0</span><span class="unit">地域</span></div>
+        <div class="stat-card__label">PLATEAU公式公開地域</div>
+      </div>
+      <div class="stat-card fade-up">
+        <div class="stat-card__number tabular"><span class="counter" data-target="0">0</span><span class="unit">秒</span></div>
+        <div class="stat-card__label">セットアップ時間</div>
+      </div>
+      <div class="stat-card fade-up">
+        <div class="stat-card__number tabular"><span class="counter" data-target="0">0</span><span class="unit">円</span></div>
+        <div class="stat-card__label">利用料金</div>
+      </div>
+      <div class="stat-card fade-up">
+        <div class="stat-card__number tabular"><span class="counter" data-target="24">0</span><span class="unit">時間</span></div>
+        <div class="stat-card__label">いつでも利用可能</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FEATURE OVERVIEW ===== -->
+<section class="dashboard-section" id="features">
+  <div class="container">
+    <span class="section-label">Product Overview</span>
+    <h2 class="section-title">データで見る、建物の影</h2>
+    <p class="section-desc">公開データの建物高さ・形状と太陽位置を組み合わせ、季節・時刻別の日影を概算表示します。</p>
+
+    <div class="feature-grid stagger">
+      <div class="feature-card fade-up">
+        <div class="feature-card__eyebrow">Building Data</div>
+        <div class="feature-card__title">PLATEAUの3D建物モデルを地図上に重ねる</div>
+        <p class="feature-card__desc">対応都市では、周辺建物の高さと形状を読み込み、現地に近い条件で日影を確認できます。</p>
+        <div class="feature-card__meta">公式一覧306地域。実際の収録・表示は地図で確認</div>
+      </div>
+
+      <div class="feature-card fade-up">
+        <div class="feature-card__eyebrow">Sun Position</div>
+        <div class="feature-card__title">季節・時刻を変えて日当たりを比較する</div>
+        <p class="feature-card__desc">日付と時刻を動かしながら、冬至や午後の影の伸び方をブラウザ上で確認できます。</p>
+        <div class="feature-card__meta">1日再生とタイムスライダーに対応</div>
+      </div>
+
+      <div class="feature-card fade-up">
+        <div class="feature-card__eyebrow">Custom Building</div>
+        <div class="feature-card__title">任意の建物を描いて影の影響を見る</div>
+        <p class="feature-card__desc">地図上に矩形を描き、高さや階数を調整して、計画中の建物や周辺への影響を検討できます。</p>
+        <div class="feature-card__meta">登録不要・インストール不要</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== COMPARISON TABLE ===== -->
+<section class="comparison section" id="comparison">
+  <div class="container">
+    <span class="section-label">Comparison</span>
+    <h2 class="section-title">なぜ日影シミュレータか</h2>
+    <p class="section-desc">正式解析や現地確認の前に、ブラウザで概算傾向を確認するための選択肢です。</p>
+
+    <div class="comparison-table-wrap fade-up">
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>日影シミュレータ</th>
+            <th>従来のCADソフト</th>
+            <th>現地確認</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>費用</td>
+            <td><strong style="color:var(--emerald-600)">基本シミュレーションは無料</strong></td>
+            <td>製品・契約による</td>
+            <td>移動・確認の費用が発生</td>
+          </tr>
+          <tr>
+            <td>セットアップ</td>
+            <td><strong style="color:var(--emerald-600)">不要（即利用可能）</strong></td>
+            <td>インストール + 学習コスト</td>
+            <td>スケジュール調整</td>
+          </tr>
+          <tr>
+            <td>対応エリア</td>
+            <td><strong>公式公開306地域を案内</strong></td>
+            <td>自分でモデル作成</td>
+            <td>1箇所ずつ訪問</td>
+          </tr>
+          <tr>
+            <td>リアルタイム操作</td>
+            <td><span class="check-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" width="12" height="12"><polyline points="20 6 9 17 4 12"/></svg></span></td>
+            <td><span class="check-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" width="12" height="12"><polyline points="20 6 9 17 4 12"/></svg></span></td>
+            <td><span class="cross-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" width="12" height="12"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span></td>
+          </tr>
+          <tr>
+            <td>日時変更</td>
+            <td><span class="check-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" width="12" height="12"><polyline points="20 6 9 17 4 12"/></svg></span> スライダーで瞬時</td>
+            <td><span class="check-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" width="12" height="12"><polyline points="20 6 9 17 4 12"/></svg></span> パラメータ再設定</td>
+            <td><span class="cross-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" width="12" height="12"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span> 再訪問が必要</td>
+          </tr>
+          <tr>
+            <td>3D建物データ</td>
+            <td><strong>PLATEAU公式</strong></td>
+            <td>自分で用意</td>
+            <td>なし</td>
+          </tr>
+          <tr>
+            <td>専門知識</td>
+            <td><strong style="color:var(--emerald-600)">不要</strong></td>
+            <td>CAD操作スキル必要</td>
+            <td>不要</td>
+          </tr>
+          <tr>
+            <td>共有のしやすさ</td>
+            <td><strong>URLで即共有</strong></td>
+            <td>ファイル送付</td>
+            <td>写真・口頭</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="margin-top:40px;text-align:center;">
+      <a href="./" class="btn btn--primary btn--sm" data-analytics-id="lp_comparison_cta" data-entry-cta="comparison">比較して納得したら始める</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PROCESS FLOW ===== -->
+<section class="process section section--gray" id="how-it-works">
+  <div class="container">
+    <div style="text-align:center;">
+      <span class="section-label">How It Works</span>
+      <h2 class="section-title">3ステップで日影を確認</h2>
+      <p class="section-desc" style="margin:0 auto;">難しい設定は一切不要。ブラウザを開いたら、すぐにシミュレーションを始められます。</p>
+    </div>
+
+    <div class="process__grid fade-up">
+      <div class="process__step">
+        <div class="process__step-number">1</div>
+        <div class="process__step-title">場所を検索</div>
+        <div class="process__step-desc">住所や地名で検索、またはマップを直接操作して確認したい場所を表示します。</div>
+      </div>
+
+      <div class="process__connector">
+        <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="16" x2="28" y2="16"/><polyline points="22 10 28 16 22 22"/></svg>
+      </div>
+
+      <div class="process__step">
+        <div class="process__step-number">2</div>
+        <div class="process__step-title">日時を設定</div>
+        <div class="process__step-desc">確認したい日付と時刻をスライダーで設定。季節や時間帯を自由に変更できます。</div>
+      </div>
+
+      <div class="process__connector">
+        <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="16" x2="28" y2="16"/><polyline points="22 10 28 16 22 22"/></svg>
+      </div>
+
+      <div class="process__step">
+        <div class="process__step-number">3</div>
+        <div class="process__step-title">影を確認</div>
+        <div class="process__step-desc">リアルタイムで建物の影が表示されます。3D視点で回転・ズームしてあらゆる角度から確認。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== COVERAGE MAP ===== -->
+<section class="coverage section" id="coverage">
+  <div class="container">
+    <span class="section-label">Coverage</span>
+    <h2 class="section-title">PLATEAU公式公開306地域を案内</h2>
+    <p class="section-desc">国土交通省PLATEAUの公式一覧は2026年5月11日時点で306地域です。公式公開地域と本ツールの現在の収録・表示範囲は同一とは限らないため、<a href="./city/">地域別ページ</a>から地図を開いて確認してください。</p>
+
+    <div class="coverage__layout fade-up">
+      <!-- Stylized Japan Map (CSS dots) -->
+      <div class="japan-map japan-map--image" aria-label="日本全国のPLATEAU対応エリアと3D都市データのイメージ">
+        <img src="./assets/lp-coverage.jpg" width="1672" height="941" alt="日本全国の都市データと3D建物タイルがつながるPLATEAU対応エリアのイメージ" class="coverage__image" loading="lazy">
+        <svg viewBox="0 0 400 520" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+          <!-- Hokkaido -->
+          <circle cx="310" cy="60" r="4" fill="#c7d2fe"/><circle cx="330" cy="55" r="4" fill="#c7d2fe"/>
+          <circle cx="320" cy="75" r="4" fill="#6366f1"/><circle cx="340" cy="70" r="4" fill="#c7d2fe"/>
+          <circle cx="300" cy="85" r="4" fill="#c7d2fe"/><circle cx="320" cy="90" r="4" fill="#6366f1"/>
+          <circle cx="340" cy="85" r="4" fill="#c7d2fe"/><circle cx="350" cy="65" r="4" fill="#c7d2fe"/>
+          <circle cx="310" cy="100" r="4" fill="#c7d2fe"/><circle cx="330" cy="95" r="4" fill="#6366f1"/>
+
+          <!-- Tohoku -->
+          <circle cx="290" cy="140" r="4" fill="#c7d2fe"/><circle cx="310" cy="135" r="4" fill="#6366f1"/>
+          <circle cx="300" cy="155" r="4" fill="#6366f1"/><circle cx="290" cy="170" r="4" fill="#c7d2fe"/>
+          <circle cx="310" cy="165" r="4" fill="#c7d2fe"/><circle cx="300" cy="185" r="4" fill="#6366f1"/>
+          <circle cx="285" cy="195" r="4" fill="#c7d2fe"/><circle cx="305" cy="195" r="4" fill="#c7d2fe"/>
+
+          <!-- Kanto -->
+          <circle cx="275" cy="220" r="4" fill="#6366f1"/><circle cx="295" cy="215" r="4" fill="#6366f1"/>
+          <circle cx="285" cy="235" r="5" fill="#4f46e5" opacity="0.9"><animate attributeName="r" values="5;7;5" dur="3s" repeatCount="indefinite"/></circle>
+          <circle cx="305" cy="230" r="4" fill="#6366f1"/><circle cx="270" cy="240" r="4" fill="#6366f1"/>
+          <circle cx="295" cy="245" r="4" fill="#6366f1"/>
+
+          <!-- Chubu -->
+          <circle cx="240" cy="220" r="4" fill="#6366f1"/><circle cx="255" cy="235" r="4" fill="#c7d2fe"/>
+          <circle cx="240" cy="245" r="4" fill="#6366f1"/><circle cx="260" cy="250" r="4" fill="#c7d2fe"/>
+          <circle cx="230" cy="255" r="4" fill="#c7d2fe"/><circle cx="250" cy="260" r="4" fill="#6366f1"/>
+
+          <!-- Kansai -->
+          <circle cx="210" cy="270" r="4" fill="#6366f1"/><circle cx="225" cy="275" r="4" fill="#6366f1"/>
+          <circle cx="200" cy="285" r="5" fill="#4f46e5" opacity="0.9"><animate attributeName="r" values="5;7;5" dur="3s" repeatCount="indefinite" begin="1s"/></circle>
+          <circle cx="220" cy="290" r="4" fill="#6366f1"/><circle cx="235" cy="280" r="4" fill="#c7d2fe"/>
+
+          <!-- Chugoku -->
+          <circle cx="160" cy="280" r="4" fill="#c7d2fe"/><circle cx="175" cy="275" r="4" fill="#6366f1"/>
+          <circle cx="145" cy="285" r="4" fill="#6366f1"/><circle cx="185" cy="285" r="4" fill="#c7d2fe"/>
+          <circle cx="165" cy="295" r="4" fill="#c7d2fe"/><circle cx="150" cy="295" r="4" fill="#c7d2fe"/>
+
+          <!-- Shikoku -->
+          <circle cx="175" cy="310" r="4" fill="#c7d2fe"/><circle cx="190" cy="305" r="4" fill="#6366f1"/>
+          <circle cx="205" cy="310" r="4" fill="#c7d2fe"/><circle cx="185" cy="320" r="4" fill="#c7d2fe"/>
+
+          <!-- Kyushu -->
+          <circle cx="115" cy="310" r="4" fill="#6366f1"/><circle cx="130" cy="305" r="4" fill="#c7d2fe"/>
+          <circle cx="110" cy="325" r="4" fill="#6366f1"/><circle cx="125" cy="320" r="4" fill="#c7d2fe"/>
+          <circle cx="105" cy="340" r="4" fill="#c7d2fe"/><circle cx="120" cy="335" r="4" fill="#6366f1"/>
+          <circle cx="115" cy="355" r="4" fill="#c7d2fe"/>
+
+          <!-- Okinawa -->
+          <circle cx="80" cy="430" r="3" fill="#c7d2fe"/><circle cx="90" cy="445" r="3" fill="#6366f1"/>
+          <circle cx="85" cy="460" r="3" fill="#c7d2fe"/><circle cx="95" cy="475" r="3" fill="#c7d2fe"/>
+
+          <!-- Labels -->
+          <text x="285" y="250" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="#4f46e5" text-anchor="middle">Tokyo</text>
+          <text x="200" y="300" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="#4f46e5" text-anchor="middle">Osaka</text>
+        </svg>
+      </div>
+
+      <div class="coverage__info">
+        <h3>PLATEAUデータで日影の概算をすばやく確認</h3>
+        <p>国土交通省が推進するProject PLATEAUの3D都市モデルを使用。公開データに含まれる建物の高さ・形状をもとに、日影の傾向を参考情報として確認できます。</p>
+
+        <ul class="coverage-stat-list">
+          <li>
+            <div class="coverage-stat-list__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </div>
+            <span><strong class="tabular">306</strong> 地域を公式出典付きで案内</span>
+          </li>
+          <li>
+            <div class="coverage-stat-list__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+            </div>
+            <span>LOD1の建物高さデータ使用</span>
+          </li>
+          <li>
+            <div class="coverage-stat-list__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <span>出典と整備年度を確認できる公開データ</span>
+          </li>
+          <li>
+            <div class="coverage-stat-list__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+            </div>
+            <span>公式一覧と本ツールの収録範囲を分けて表示</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== DATA UPDATE ===== -->
+<section class="data-update" aria-labelledby="data-update-title">
+  <div class="container">
+    <div class="data-update__panel fade-up">
+      <div>
+        <time class="data-update__date" datetime="2026-08-19">更新情報・2026年8月19日</time>
+        <h2 class="data-update__title" id="data-update-title">PLATEAU建物データを全国規模で更新しました</h2>
+        <p class="data-update__desc">更新対象自治体を240から303へ拡大し、公式データから自前生成した全国版へ切り替えました。利用者へのメリット、見た目の変化、残る欠損と精度上の限界を公開しています。</p>
+        <ul class="data-update__metrics" aria-label="主な更新数値">
+          <li><strong>+63</strong>更新対象自治体</li>
+          <li><strong>98.44%</strong>入力採用率</li>
+          <li><strong>約53%</strong>データ容量増</li>
+        </ul>
+      </div>
+      <a class="btn btn--secondary data-update__link" href="./updates/2026-08-19-plateau-data/" data-analytics-id="lp_data_update_20260819">今回の更新内容を見る</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TECH SPECS ===== -->
+<section class="tech-specs section section--gray">
+  <div class="container">
+    <span class="section-label">Technical Specifications</span>
+    <h2 class="section-title">技術仕様</h2>
+    <p class="section-desc">オープンデータとオープンソース技術の構成を確認できるシステム。</p>
+
+    <div class="specs-grid stagger">
+      <div class="spec-card fade-up">
+        <div class="spec-card__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+        </div>
+        <div class="spec-card__title">データソース</div>
+        <div class="spec-card__desc">国土交通省 Project PLATEAU 3D都市モデル（CityGML形式）。LOD1の建物高さ・形状データを使用。OpenStreetMapの地図データと組み合わせ。</div>
+      </div>
+
+      <div class="spec-card fade-up">
+        <div class="spec-card__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <div class="spec-card__title">計算精度</div>
+        <div class="spec-card__desc">標準的な太陽位置計算と公開3D建物データを組み合わせた概算シミュレーション。重要な判断では専門家の確認を併用してください。</div>
+      </div>
+
+      <div class="spec-card fade-up">
+        <div class="spec-card__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        </div>
+        <div class="spec-card__title">動作環境</div>
+        <div class="spec-card__desc">WebGL対応のモダンブラウザ（Chrome, Firefox, Safari, Edge）。デスクトップ・タブレット・スマートフォン対応。インストール不要。</div>
+      </div>
+
+      <div class="spec-card fade-up">
+        <div class="spec-card__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div class="spec-card__title">プライバシー</div>
+        <div class="spec-card__desc">アカウント登録不要。氏名・メールアドレスの入力不要。地図データと利用状況の確認のため外部サービスと通信します。</div>
+      </div>
+
+      <div class="spec-card fade-up">
+        <div class="spec-card__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+        </div>
+        <div class="spec-card__title">オープンソース</div>
+        <div class="spec-card__desc">MIT Licenseで公開。ソースコードは完全にオープン。カスタマイズ・フォーク自由。コミュニティ貢献歓迎。</div>
+      </div>
+
+      <div class="spec-card fade-up">
+        <div class="spec-card__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        </div>
+        <div class="spec-card__title">パフォーマンス</div>
+        <div class="spec-card__desc">WebGLによるGPUレンダリング。タイルベースで必要な範囲を読み込みます。描画性能は端末・ブラウザ・通信環境によって異なります。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== USE CASES ===== -->
+<section class="usecases section" id="usecases">
+  <div class="container">
+    <span class="section-label">Use Scenes</span>
+    <h2 class="section-title">あらゆるシーンでの活用を想定しています</h2>
+    <p class="section-desc">個人の住宅購入から、プロフェッショナルの業務利用まで、幅広い使い方を想定しています。</p>
+
+    <div class="usecase-tabs" role="tablist">
+      <button class="usecase-tab active" role="tab" data-panel="personal">個人利用</button>
+      <button class="usecase-tab" role="tab" data-panel="business">ビジネス利用</button>
+      <button class="usecase-tab" role="tab" data-panel="professional">専門家利用</button>
+    </div>
+
+    <div class="usecase-panels">
+      <div class="usecase-panel active" id="panel-personal">
+        <div class="usecase-card">
+          <div class="usecase-card__role">住宅購入検討者</div>
+          <div class="usecase-card__title">不動産購入前の日当たり確認</div>
+          <div class="usecase-card__desc">物件の日当たりを、代表的な季節・時間帯ごとに概算確認。冬至などの日影パターンを切り替え、傾向を比較できます。現地訪問前の参考情報としてご利用ください。</div>
+        </div>
+        <div class="usecase-card">
+          <div class="usecase-card__role">ガーデニング愛好家</div>
+          <div class="usecase-card__title">庭・ベランダの日照計画</div>
+          <div class="usecase-card__desc">植物配置の検討前に、代表的な季節・時刻で日影の傾向を概算確認できます。必要日照時間を算定するものではないため、現地確認と併用してください。</div>
+        </div>
+        <div class="usecase-card">
+          <div class="usecase-card__role">太陽光発電検討者</div>
+          <div class="usecase-card__title">ソーラーパネル設置の日照確認</div>
+          <div class="usecase-card__desc">周辺建物による影の傾向を代表的な季節・時刻で概算確認できます。気象、発電設備性能、詳細形状等を考慮しないため、年間発電量の算定には利用できません。</div>
+        </div>
+        <div class="usecase-card">
+          <div class="usecase-card__role">引越し検討者</div>
+          <div class="usecase-card__title">賃貸物件の日当たり比較</div>
+          <div class="usecase-card__desc">複数の候補物件の日当たりを、同じ条件で比較。内見前に日照環境をチェックして、効率的に物件を絞り込めます。</div>
+        </div>
+      </div>
+
+      <div class="usecase-panel" id="panel-business">
+        <div class="usecase-card">
+          <div class="usecase-card__role">不動産営業</div>
+          <div class="usecase-card__title">物件の日当たり説明資料</div>
+          <div class="usecase-card__desc">顧客への物件説明時に、日当たり状況を視覚的に提示。スクリーンショットや動画で説明資料を作成し、説得力のある営業活動を支援します。</div>
+        </div>
+        <div class="usecase-card">
+          <div class="usecase-card__role">デベロッパー</div>
+          <div class="usecase-card__title">開発計画の日影検討</div>
+          <div class="usecase-card__desc">新規開発プロジェクトにおける日影の影響を迅速にスクリーニング。初期段階での概略検討に活用できます。</div>
+        </div>
+        <div class="usecase-card">
+          <div class="usecase-card__role">マンション管理組合</div>
+          <div class="usecase-card__title">近隣建設計画の影響確認</div>
+          <div class="usecase-card__desc">近隣に新しい建物が計画された際の日影影響を事前に確認。住民への説明資料として活用できます。</div>
+        </div>
+        <div class="usecase-card">
+          <div class="usecase-card__role">教育機関</div>
+          <div class="usecase-card__title">都市計画・建築教育教材</div>
+          <div class="usecase-card__desc">日影規制や都市計画の教育に活用。実際の都市データを使った実践的な学習が可能です。</div>
+        </div>
+      </div>
+
+      <div class="usecase-panel" id="panel-professional">
+        <div class="usecase-card">
+          <div class="usecase-card__role">建築士</div>
+          <div class="usecase-card__title">建築設計の採光検討</div>
+          <div class="usecase-card__desc">設計の初期段階で周辺建物の日影を確認。採光計画の参考情報として、本格的なCADシミュレーション前のプレスタディに活用できます。</div>
+        </div>
+        <div class="usecase-card">
+          <div class="usecase-card__role">都市計画コンサルタント</div>
+          <div class="usecase-card__title">まちづくりの日照環境分析</div>
+          <div class="usecase-card__desc">広域の日影パターンを俯瞰して把握。まちづくり計画における日照環境の検討に活用できます。</div>
+        </div>
+        <div class="usecase-card">
+          <div class="usecase-card__role">環境アセスメント</div>
+          <div class="usecase-card__title">環境影響の事前スクリーニング</div>
+          <div class="usecase-card__desc">大規模開発の環境影響評価における日影の概略検討。本格調査前のスクリーニングツールとして活用できます。</div>
+        </div>
+        <div class="usecase-card">
+          <div class="usecase-card__role">写真家・映像制作者</div>
+          <div class="usecase-card__title">ロケーション撮影の光環境確認</div>
+          <div class="usecase-card__desc">撮影予定地の光の入り方を事前にシミュレーション。最適な撮影時間帯を計画できます。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FAQ ===== -->
+<section class="faq section section--gray" id="faq">
+  <div class="container">
+    <div style="text-align:center;">
+      <span class="section-label">FAQ</span>
+      <h2 class="section-title">よくある質問</h2>
+    </div>
+
+    <div class="faq__list">
+      <div class="faq-item">
+        <button class="faq-item__trigger" aria-expanded="false">
+          本当に無料で使えますか？
+          <span class="faq-item__icon">+</span>
+        </button>
+        <div class="faq-item__content">
+          <div class="faq-item__answer">現在公開中の基本シミュレーションは、登録不要・無料で利用できます。将来提供する法人向け案件管理、API、個別支援等は有料となる場合があります。</div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-item__trigger" aria-expanded="false">
+          シミュレーション結果の精度はどの程度ですか？
+          <span class="faq-item__icon">+</span>
+        </button>
+        <div class="faq-item__content">
+          <div class="faq-item__answer">国土交通省PLATEAUの公式3D都市モデルデータを使用していますが、データの精度は地域・建物・整備年度によって異なります。樹木、仮設物、詳細な屋根形状、地形など反映されない要素があるため、概算の参考情報としてご利用ください。</div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-item__trigger" aria-expanded="false">
+          自分の住所・地域は対応していますか？
+          <span class="faq-item__icon">+</span>
+        </button>
+        <div class="faq-item__content">
+          <div class="faq-item__answer">国土交通省PLATEAUの公式一覧には、2026年5月11日時点で306地域が掲載されています。ただし、公式公開地域であることと、本ツールの現在のタイル収録・表示範囲は同一とは限りません。<a href="./city/">地域別ページ</a>から地図を開き、PLATEAU建物が表示されるかご確認ください。</div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-item__trigger" aria-expanded="false">
+          スマートフォンでも使えますか？
+          <span class="faq-item__icon">+</span>
+        </button>
+        <div class="faq-item__content">
+          <div class="faq-item__answer">はい、WebGL対応のモダンブラウザ（Chrome, Safari, Firefox, Edge）であればスマートフォンやタブレットからもご利用いただけます。タッチ操作にも対応しています。より快適にご利用いただくにはデスクトップ環境を推奨しますが、外出先での簡易確認にもお使いいただけます。</div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-item__trigger" aria-expanded="false">
+          法人での利用や、業務利用は可能ですか？
+          <span class="faq-item__icon">+</span>
+        </button>
+        <div class="faq-item__content">
+          <div class="faq-item__answer">MITライセンスのオープンソースソフトウェアですので、商用・業務利用も自由に行えます。大量アクセスや組み込み利用、カスタマイズなどのご相談は、上部の「XのDMで相談する」よりXプロフィールへ進み、DMでお問い合わせください。</div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-item__trigger" aria-expanded="false">
+          データの更新頻度はどのくらいですか？
+          <span class="faq-item__icon">+</span>
+        </button>
+        <div class="faq-item__content">
+          <div class="faq-item__answer">公式公開一覧と、本ツールが読み込むPMTilesの更新時期は異なる場合があります。地域別ページには公式データ年度を表示し、アプリ内では実際の建物表示を確認できるようにしています。最新公式データが本ツールへ反映済みとは限りません。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== USE SCENES ===== -->
+<section class="social-proof section">
+  <div class="container">
+    <div style="text-align:center;">
+      <span class="section-label">Assumed Uses</span>
+      <h2 class="section-title">さまざまな場面での利用を想定しています</h2>
+    </div>
+
+    <div class="proof-grid stagger">
+      <div class="proof-card fade-up">
+        <div class="proof-card__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </div>
+        <div class="proof-card__title">住宅購入者</div>
+        <div class="proof-card__desc">物件購入前の日当たりチェックに</div>
+      </div>
+
+      <div class="proof-card fade-up">
+        <div class="proof-card__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+        </div>
+        <div class="proof-card__title">不動産業者</div>
+        <div class="proof-card__desc">物件案内の説明ツールとして</div>
+      </div>
+
+      <div class="proof-card fade-up">
+        <div class="proof-card__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+        </div>
+        <div class="proof-card__title">建築設計者</div>
+        <div class="proof-card__desc">採光設計のプレスタディに</div>
+      </div>
+
+      <div class="proof-card fade-up">
+        <div class="proof-card__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        </div>
+        <div class="proof-card__title">教育・研究</div>
+        <div class="proof-card__desc">都市計画・建築教育の教材に</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TRUST BADGES ===== -->
+<section class="trust-badges">
+  <div class="container">
+    <div class="trust-badges__inner">
+      <div class="trust-badge">
+        <div class="trust-badge__icon trust-badge__icon--plateau">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <span>国土交通省PLATEAU公式データ</span>
+      </div>
+
+      <div class="trust-badge">
+        <div class="trust-badge__icon trust-badge__icon--oss">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+        </div>
+        <span>MIT License / OSS公開中</span>
+      </div>
+
+      <div class="trust-badge">
+        <div class="trust-badge__icon trust-badge__icon--osm">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        </div>
+        <span>OpenStreetMap地図データ</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FINAL CTA ===== -->
+<section class="final-cta">
+  <div class="container final-cta__content">
+    <h2 class="final-cta__title">始めるのに1分もかかりません</h2>
+    <p class="final-cta__desc">ブラウザを開くだけ。登録不要、インストール不要。今すぐ建物の日影をシミュレーションできます。</p>
+
+    <div class="final-cta__actions">
+      <a href="./" class="btn btn--white" data-analytics-id="lp_final_cta" data-entry-cta="final">
+        無料で始める
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+      <a href="https://x.com/Igniter1005" class="btn btn--ghost" target="_blank" rel="noopener" data-inquiry-channel="x_dm" data-inquiry-location="lp_final" style="color:var(--slate-400);">
+        XのDMで相談する
+      </a>
+      <a href="https://github.com/rx-tomo/shadow-simulator/issues/new/choose" class="btn btn--ghost" target="_blank" rel="noopener" data-inquiry-channel="github_issue" data-inquiry-location="lp_final" style="color:var(--slate-400);">GitHubで不具合・改善提案</a>
+    </div>
+
+    <div class="final-cta__reassurance">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      登録不要 -- メールアドレスも不要です
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+  <div class="container footer__inner">
+    <div class="footer__copy">&copy; 2024 日影シミュレータ. MIT License.</div>
+    <ul class="footer__links">
+      <li><a href="./">アプリを使う</a></li>
+      <li><a href="./updates/2026-08-19-plateau-data/">更新情報</a></li>
+      <li><a href="https://x.com/Igniter1005" target="_blank" rel="noopener">Xで相談する</a></li>
+      <li><a href="https://github.com/rx-tomo/shadow-simulator" target="_blank" rel="noopener">GitHubで見る</a></li>
+      <li><a href="https://github.com/rx-tomo/shadow-simulator/issues/new/choose" target="_blank" rel="noopener">不具合・改善提案</a></li>
+    </ul>
+  </div>
+</footer>
+
+<div class="mobile-cta" id="mobileCta">
+  <a href="./" class="btn btn--primary mobile-cta__button" data-analytics-id="lp_mobile_cta" data-entry-cta="mobile">今すぐ無料で試す</a>
+</div>
+
+<!-- ===== JAVASCRIPT ===== -->
+<script>
+(function() {
+  'use strict';
+
+  const LP_VARIANT = 'version_c';
+
+  function trackLpEvent(name, params) {
+    var payload = Object.assign({
+      lp_variant: LP_VARIANT
+    }, params || {});
+
+    if (typeof window === 'undefined') return;
+    if (window.shadowAnalytics && typeof window.shadowAnalytics.track === 'function') {
+      window.shadowAnalytics.track(name, payload);
+      return;
+    }
+    window.__shadowAnalyticsQueue = Array.isArray(window.__shadowAnalyticsQueue)
+      ? window.__shadowAnalyticsQueue
+      : [];
+    window.__shadowAnalyticsQueue.push({ name: name, params: payload });
+  }
+
+  function decorateAppCta(link) {
+    var destination = new URL(link.getAttribute('href') || '', window.location.href);
+    if (destination.origin !== window.location.origin) return;
+
+    var currentParams = new URLSearchParams(window.location.search);
+    ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content'].forEach(function(name) {
+      if (!destination.searchParams.has(name) && currentParams.has(name)) {
+        destination.searchParams.set(name, currentParams.get(name));
+      }
+    });
+    destination.searchParams.set('entry_surface', 'lp');
+    destination.searchParams.set('entry_cta', link.getAttribute('data-entry-cta') || 'unknown');
+    link.setAttribute('href', destination.pathname + destination.search + destination.hash);
+  }
+
+  // ---- Navigation scroll effect ----
+  const nav = document.getElementById('nav');
+  let lastScroll = 0;
+  window.addEventListener('scroll', function() {
+    const scrollY = window.scrollY;
+    if (scrollY > 10) {
+      nav.classList.add('scrolled');
+    } else {
+      nav.classList.remove('scrolled');
+    }
+    lastScroll = scrollY;
+  }, { passive: true });
+
+  // ---- Mobile menu toggle ----
+  const mobileToggle = document.getElementById('mobileToggle');
+  const navLinks = document.getElementById('navLinks');
+  mobileToggle.addEventListener('click', function() {
+    navLinks.classList.toggle('open');
+  });
+
+  // Close mobile menu when clicking a link
+  navLinks.querySelectorAll('a').forEach(function(link) {
+    link.addEventListener('click', function() {
+      navLinks.classList.remove('open');
+    });
+  });
+
+  // ---- Scroll-triggered animations ----
+  const observerOptions = {
+    root: null,
+    rootMargin: '0px 0px -60px 0px',
+    threshold: 0.1
+  };
+
+  const observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, observerOptions);
+
+  document.querySelectorAll('.fade-up').forEach(function(el) {
+    observer.observe(el);
+  });
+
+  // ---- Animated counters ----
+  function animateCounter(el) {
+    const target = parseInt(el.getAttribute('data-target'), 10);
+    const duration = 2000;
+    const startTime = performance.now();
+
+    // If target is 0, just display 0 immediately
+    if (target === 0) {
+      el.textContent = '0';
+      return;
+    }
+
+    function update(currentTime) {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+
+      // Ease out cubic
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const current = Math.round(eased * target);
+
+      el.textContent = current.toLocaleString();
+
+      if (progress < 1) {
+        requestAnimationFrame(update);
+      }
+    }
+
+    requestAnimationFrame(update);
+  }
+
+  const counterObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        animateCounter(entry.target);
+        counterObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.5 });
+
+  document.querySelectorAll('.counter').forEach(function(el) {
+    counterObserver.observe(el);
+  });
+
+  // ---- FAQ accordion ----
+  document.querySelectorAll('.faq-item__trigger').forEach(function(trigger) {
+    trigger.addEventListener('click', function() {
+      const faqItem = this.closest('.faq-item');
+      const isOpen = faqItem.classList.contains('open');
+
+      // Close all
+      document.querySelectorAll('.faq-item.open').forEach(function(item) {
+        item.classList.remove('open');
+        item.querySelector('.faq-item__trigger').setAttribute('aria-expanded', 'false');
+      });
+
+      // Toggle current
+      if (!isOpen) {
+        faqItem.classList.add('open');
+        this.setAttribute('aria-expanded', 'true');
+      }
+    });
+  });
+
+  // ---- Use case tabs ----
+  document.querySelectorAll('.usecase-tab').forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      // Update tab state
+      document.querySelectorAll('.usecase-tab').forEach(function(t) {
+        t.classList.remove('active');
+      });
+      this.classList.add('active');
+
+      // Update panel state
+      var panelId = 'panel-' + this.getAttribute('data-panel');
+      document.querySelectorAll('.usecase-panel').forEach(function(p) {
+        p.classList.remove('active');
+      });
+      document.getElementById(panelId).classList.add('active');
+    });
+  });
+
+  // ---- Smooth scroll for anchor links ----
+  document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
+    anchor.addEventListener('click', function(e) {
+      var targetId = this.getAttribute('href');
+      if (targetId === '#') return;
+      var targetEl = document.querySelector(targetId);
+      if (targetEl) {
+        e.preventDefault();
+        var offset = 80; // nav height
+        var top = targetEl.getBoundingClientRect().top + window.scrollY - offset;
+        window.scrollTo({ top: top, behavior: 'smooth' });
+      }
+    });
+  });
+
+  // ---- Mobile CTA visibility ----
+  const mobileCta = document.getElementById('mobileCta');
+  const heroSection = document.getElementById('hero');
+  if (mobileCta && heroSection && 'IntersectionObserver' in window) {
+    const mobileCtaObserver = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        mobileCta.classList.toggle('visible', !entry.isIntersecting);
+      });
+    }, { threshold: 0.05 });
+    mobileCtaObserver.observe(heroSection);
+  }
+
+  // ---- Analytics ----
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    trackLpEvent('lp_view');
+  } else {
+    document.addEventListener('DOMContentLoaded', function() {
+      trackLpEvent('lp_view');
+    }, { once: true });
+  }
+
+  document.querySelectorAll('[data-analytics-id]').forEach(function(cta) {
+    cta.addEventListener('click', function(event) {
+      if (this.hasAttribute('data-entry-cta')) {
+        var originalHref = this.getAttribute('href') || '';
+        decorateAppCta(this);
+        var destination = new URL(this.href, window.location.href);
+        if ((originalHref === './' || originalHref === '.')
+          && (window.location.pathname === '/lp' || window.location.pathname === '/lp/')
+          && (destination.pathname === '/lp' || destination.pathname === '/lp/')) {
+          destination.pathname = '/';
+          this.setAttribute('href', destination.pathname + destination.search + destination.hash);
+        }
+        if (destination.pathname === window.location.pathname) {
+          event.preventDefault();
+          history.replaceState(null, '', destination.pathname + destination.search + destination.hash);
+        }
+      }
+      trackLpEvent('lp_cta_click', {
+        cta_id: this.getAttribute('data-analytics-id') || '',
+        cta_href: this.getAttribute('href') || ''
+      });
+    });
+  });
+
+})();
+</script>
+</body>
+</html>

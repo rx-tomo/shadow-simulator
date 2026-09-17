@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>利用規約 - 日影シミュレータ</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background: #f8fafc;
+        color: var(--text);
+      }
+      .legal-page {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 32px 20px 48px;
+      }
+      .legal-page h1 {
+        font-size: 22px;
+        margin: 0 0 8px;
+      }
+      .legal-page .effective-date {
+        font-size: 13px;
+        color: var(--muted);
+        margin: 0 0 28px;
+      }
+      .legal-page h2 {
+        font-size: 16px;
+        margin: 28px 0 8px;
+        padding-bottom: 4px;
+        border-bottom: 1px solid var(--panel-border);
+        color: var(--text);
+      }
+      .legal-page p,
+      .legal-page li {
+        font-size: 14px;
+        line-height: 1.8;
+        margin: 6px 0;
+      }
+      .legal-page ul,
+      .legal-page ol {
+        padding-left: 22px;
+        margin: 6px 0;
+      }
+      .legal-page a {
+        color: var(--primary);
+      }
+      .back-link {
+        display: inline-block;
+        margin-bottom: 20px;
+        font-size: 13px;
+        color: var(--primary);
+        text-decoration: none;
+      }
+      .back-link:hover {
+        text-decoration: underline;
+      }
+      .legal-footer {
+        margin-top: 40px;
+        padding-top: 16px;
+        border-top: 1px solid var(--panel-border);
+        font-size: 12px;
+        color: var(--muted);
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="legal-page">
+      <a href="./" class="back-link">&larr; 日影シミュレータに戻る</a>
+      <h1>利用規約</h1>
+      <p class="effective-date">施行日: 2026年2月16日</p>
+
+      <h2>第1条（サービスの概要）</h2>
+      <p>日影シミュレータ（以下「本ツール」）は、全国の建物の日影をシミュレーションし、参考情報として提供する無料のWebツールです。本ツールは、国土交通省が提供するPLATEAU 3D都市モデルおよびOpenStreetMapの地図データを活用しています。</p>
+
+      <h2>第2条（免責事項）</h2>
+      <p>本ツールの計算結果は参考情報であり、実際の日影環境と異なる場合があります。以下の制約を理解した上でご利用ください。</p>
+      <ul>
+        <li>建物の高さ・形状の精度は、データソースや建物によって異なります</li>
+        <li>樹木データは含まれていないため、樹木による日影は反映されません</li>
+        <li>地形の起伏の反映は限定的です</li>
+        <li>PLATEAUの建物データはLOD1（簡易形状：箱型）を使用しており、屋根形状等の詳細は反映されません</li>
+        <li>データの更新時期により、新しい建物が反映されていない場合があります</li>
+      </ul>
+      <p>不動産取引、建築設計、その他の重要な意思決定の唯一の根拠として本ツールの計算結果を使用しないでください。正確な日影の確認には、専門家への相談や公的な日影規制図の参照をお勧めします。</p>
+
+      <h2>第3条（損害の免責）</h2>
+      <p>本ツールの利用または利用できなかったことにより生じたいかなる損害についても、開発者は責任を負いません。これには直接的・間接的な損害、逸失利益、データの損失を含みます。</p>
+
+      <h2>第4条（サービスの変更・停止）</h2>
+      <p>開発者は、事前の通知なく、本ツールの内容を変更し、またはサービスの提供を一時的もしくは恒久的に停止する権利を留保します。</p>
+
+      <h2>第5条（禁止事項）</h2>
+      <p>利用者は、以下の行為を行ってはなりません。</p>
+      <ol>
+        <li>サーバーに過度な負荷を与えるアクセス（スクレイピング、自動化された大量リクエスト等）</li>
+        <li>本ツールのソースコードの逆コンパイル、リバースエンジニアリング（オープンソース部分を除く）</li>
+        <li>本ツールを利用した違法行為または第三者の権利を侵害する行為</li>
+        <li>本ツールの運営を妨害する行為</li>
+      </ol>
+
+      <h2>第6条（知的財産権）</h2>
+      <p>本ツールで使用している各データの権利は、それぞれの提供者に帰属します。PLATEAUデータは国土交通省が提供し、CC BY 4.0ライセンスのもとで利用しています。地図データはOpenStreetMap contributorsに帰属します。</p>
+
+      <h2>第7条（規約の変更）</h2>
+      <p>開発者は、本規約を随時変更できるものとします。変更後の規約は、本ページに掲載した時点で効力を生じます。</p>
+
+      <h2>第8条（準拠法・管轄）</h2>
+      <p>本規約は日本法に準拠し、解釈されます。本ツールに関する紛争については、東京地方裁判所を第一審の専属的合意管轄裁判所とします。</p>
+
+      <div class="legal-footer">
+        <p>&copy; 日影シミュレータ &mdash; <a href="./">ホーム</a> / <a href="./privacy.html">プライバシーポリシー</a></p>
+      </div>
+    </div>
+  </body>
+</html>

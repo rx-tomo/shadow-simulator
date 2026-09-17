@@ -1,0 +1,82 @@
+name: 日照比較見本への専門家レビュー
+description: 計画案A/B比較見本に足りない入力・精度・評価点・共有形式を伝えます。
+title: "[Pilot feedback] "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        このIssueは公開されます。氏名、会社名、メールアドレス、住所、図面、顧客情報、未公開URL、契約情報などの個人情報・機密情報を書かないでください。
+        実案件の個別相談は、パイロットページに戻りXのDMをご利用ください。DMにも機微な情報や図面は送らず、最初は概要だけをお知らせください。
+  - type: checkboxes
+    id: privacy_confirmation
+    attributes:
+      label: 公開前の確認
+      options:
+        - label: 本文・URL・画像に個人情報や機密情報を含めていません。
+          required: true
+  - type: dropdown
+    id: reviewer_perspective
+    attributes:
+      label: どの立場に近いですか
+      description: 会社名や氏名は記載しないでください。
+      options:
+        - 設計事務所の設計・都市設計
+        - デベロッパーの開発企画・設計監理
+        - CAD・BIM・GIS・建築技術支援
+        - 不動産の企画・評価
+        - その他・回答しない
+    validations:
+      required: true
+  - type: textarea
+    id: decision_context
+    attributes:
+      label: どの判断に使いたいですか
+      description: 実在住所や案件名を出さず、一般化した業務場面と判断を書いてください。
+      placeholder: 例）基本計画で2案から詳細検討へ進める案を選ぶ前に、広場と歩行者動線への影響差を確認したい。
+    validations:
+      required: true
+  - type: textarea
+    id: current_alternative
+    attributes:
+      label: 現在の代替方法
+      description: 現在使う図面、ソフト、外注、現地確認などを一般名で書いてください。
+      placeholder: 例）CADの簡易日影、専用ソフト、外部専門家への依頼。
+    validations:
+      required: true
+  - type: textarea
+    id: missing_inputs
+    attributes:
+      label: 見本に足りない入力・前提
+      description: この情報がなければ評価できない、という入力や条件を教えてください。
+      placeholder: 例）実敷地境界、地盤高、周辺建物の整備年、用途別の評価点。
+    validations:
+      required: true
+  - type: textarea
+    id: required_accuracy
+    attributes:
+      label: 必要な精度・信頼性
+      description: 許容できる誤差、必要な検証根拠、概算から専門解析へ切り替える条件を教えてください。
+      placeholder: 例）基本計画の案絞り込みには概算でよいが、近隣説明前には設計原図と専用ソフトによる再確認が必要。
+    validations:
+      required: true
+  - type: textarea
+    id: required_output
+    attributes:
+      label: 必要な評価点・共有形式
+      description: どこを評価し、誰へどの形式で共有できれば実務に使えるかを教えてください。
+      placeholder: 例）広場、住戸、歩道の指定点。A3一枚の要約と、条件別の根拠表。
+    validations:
+      required: true
+  - type: dropdown
+    id: follow_up_interest
+    attributes:
+      label: 次の確認への関心
+      options:
+        - 公開Issueで追加質問に回答できる
+        - 条件が合えば非公開の適格ヒアリングを検討できる
+        - 今回は意見提供だけ
+        - 回答しない
+    validations:
+      required: true

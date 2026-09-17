@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <!-- Security policy: external domains are explicitly allowlisted. -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://www.googletagmanager.com; style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; connect-src 'self' https://tiles.openfreemap.org https://nominatim.openstreetmap.org https://tiles.shadow.datagen-pro.com https://www.google-analytics.com pmtiles: blob:; img-src 'self' https://tiles.openfreemap.org data: blob:; worker-src 'self' blob:; child-src 'self' blob:" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Primary metadata -->
+    <title>日影シミュレータ</title>
+    <meta name="description" content="物件購入前に冬至や午後の日当たりを地図上で概算確認できる日影シミュレーションツール。PLATEAU建物データを活用し、土地・マンション購入や設計初期の参考情報を提供します。" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="日影シミュレータ" />
+    <meta property="og:description" content="ブラウザだけで建物の影をリアルタイムに確認できる日影シミュレーションツールです。" />
+    <meta property="og:image" content="https://shadow.datagen-pro.com/assets/ogp.png" />
+    <meta property="og:url" content="https://shadow.datagen-pro.com/" />
+    <meta property="og:type" content="website" />
+
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="日影シミュレータ" />
+    <meta name="twitter:description" content="ブラウザだけで建物の影をリアルタイムに確認できる日影シミュレーションツールです。" />
+    <meta name="twitter:image" content="https://shadow.datagen-pro.com/assets/ogp.png" />
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/maplibre-gl@5.13.0/dist/maplibre-gl.css"
+      rel="stylesheet"
+      integrity="sha384-mnM9NG1099tBMNxdDQNDKIxYcn/fmqQXFJvbT5l1MsrWvzfxBEffceBsw75/cW2R"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="./styles.css?v=20260731-1" />
+
+    <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@5.13.0/dist/maplibre-gl.js"
+      integrity="sha384-Nvz6wITR4vEzcMz/FWUFgkrmKDhnaQbjYxIIbwwbAFha9kWiRhmR4QjJ3zhrlnR8"
+      crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/terra-draw@1.24.0/dist/terra-draw.umd.js"
+      integrity="sha384-+BUTsQjPxkHe6AW1YDNPI4zgQVP+JPHqKHWZFCjAFx9kEBJf1i5CULELmOcd91FA"
+      crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/terra-draw-maplibre-gl-adapter@1.3.0/dist/terra-draw-maplibre-gl-adapter.umd.js"
+      integrity="sha384-WsrI712xt6Jbtq0AuSOLvu9bh5KFak0mwIYaCGuauTasy5+9RLvgAbDnbAjoHisV"
+      crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/luxon@3.7.2/build/global/luxon.min.js"
+      integrity="sha384-MPG/j0tMZel8D/wdSK2M2n+fUXFQ6lHE3r5wnJZ25xVC8KKtBOvT9BGMOmLfSxGT"
+      crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/suncalc@1.9.0/suncalc.js"
+      integrity="sha384-oiKvfHOCwLd5BVeyS4Zc1WW9KNRFXyXCkijYVrNbvw6BzoPFC+HiHzZi8FlRAvQ3"
+      crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pmtiles@3.2.1/dist/pmtiles.js"
+      integrity="sha384-QfbOCebHNw8pQiPAOd2IFee2v2A5VYZxBk0+JGZ5H+3mfzVIp6zsQNkTsfGJot93"
+      crossorigin="anonymous"></script>
+
+    <script src="./loading-fallback.js?v=20260217-2"></script>
+    <!-- GA4 (loaded only on non-localhost domains) -->
+    <script defer src="./analytics-loader.js?v=20260403-1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"
+      integrity="sha384-en/ztfPSRkGfME4KIm05joYXynqzUgbsG5nMrj/xEFAHXkeZfO3yMK8QQ+mP7p1/"
+      crossorigin="anonymous"
+      defer></script>
+    <script type="module" src="./app.js?v=20260908-1"></script>
+  </head>
+  <body>
+    <div id="app">
+      <div id="mapContainer" class="map-container">
+        <div id="map"></div>
+        <div id="plateauFallbackNotice" class="fallback-toast hidden" role="alert">
+          PLATEAU建物データを取得できません。時間をおいて再読み込みしてください
+        </div>
+        <div id="legend" class="legend">
+          <div class="legend-title">建物の種類</div>
+          <div class="legend-item">
+            <span class="legend-color" style="background-color: #d97236;"></span>
+            <span>PLATEAU建物</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-color" style="background-color: #6b8caf;"></span>
+            <span>ベースマップ建物</span>
+          </div>
+          <a class="legend-help-link" href="./articles/building-data-and-height/">色と高さの説明</a>
+        </div>
+        <div
+          id="nightOverlay"
+          class="night-overlay hidden"
+          aria-hidden="true"
+        ></div>
+        <div id="loadingOverlay" class="loading-overlay">
+          <div class="loading-spinner"></div>
+          <span class="loading-text">地図データを読み込み中...</span>
+        </div>
+        <div id="shadowProgress" class="shadow-progress hidden" role="status" aria-label="影計算中">
+          <div class="shadow-progress-spinner"></div>
+          <span class="shadow-progress-text">影を計算中...</span>
+        </div>
+        <div id="xMobileGuide" class="x-mobile-guide hidden" role="note">
+          <div>
+            <strong>投稿の場所を地図で確認</strong>
+            <span>まず地図を動かす。気になる場所は右上メニューで日時を変えられます</span>
+          </div>
+          <button id="xMobileGuideClose" class="x-mobile-guide-close" type="button" aria-label="案内を閉じる">×</button>
+        </div>
+      </div>
+
+      <button id="panelOpenBtn" class="panel-open-btn hidden" aria-label="パネルを開く">☰</button>
+      <aside id="panel" class="panel">
+        <header class="panel-header">
+          <h1>日影シミュレータ</h1>
+          <div class="panel-header-actions">
+            <a
+              class="github-repo-link"
+              href="https://github.com/rx-tomo/shadow-simulator"
+              target="_blank"
+              rel="noopener"
+              aria-label="GitHubで公開リポジトリを見る"
+            >
+              <svg class="github-repo-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.22 2.2.82A7.65 7.65 0 0 1 8 3.86c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z" />
+              </svg>
+              <span>GitHubで見る</span>
+            </a>
+            <button id="panelToggle" class="icon-button" aria-label="パネルを閉じる">
+              ✕
+            </button>
+          </div>
+        </header>
+
+        <div class="panel-actions">
+          <div class="row">
+            <div class="search-input-wrap">
+              <span class="search-icon">🔍</span>
+              <input id="searchInput" type="text" placeholder="住所など入力" />
+            </div>
+            <button id="searchButton" class="btn">検索</button>
+            <button id="shareButton" class="btn" type="button" title="URLをコピー">共有</button>
+            <button id="exportPngButton" class="btn" type="button" title="画像保存">📷</button>
+            <button id="exportPdfButton" class="btn btn-export-pdf" type="button" title="PDF保存">PDF</button>
+          </div>
+        </div>
+
+        <div class="panel-body">
+          <div id="fileNotice" class="notice hidden">
+            ローカル（file://）はブラウザ制限で動かない場合があります。ローカルで使う場合は
+            <code>scripts/serve.command</code> でHTTP配信するか、GitHub Pagesで開いてください。
+          </div>
+
+          <div id="quickStartCard" class="quick-start-card" aria-label="サンプルで試す">
+            <div>
+              <strong>サンプルで試す</strong>
+              <span>冬至14時の影をすぐ確認</span>
+            </div>
+            <div class="quick-start-actions">
+              <button id="quickStartTokyoWinterButton" class="btn small" type="button">東京駅・冬至14時</button>
+              <button id="quickStartWinterHereButton" class="btn small" type="button">この場所で冬至14時</button>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="shareNoteInput">共有メモ</label>
+            <input
+              id="shareNoteInput"
+              type="text"
+              maxlength="120"
+              placeholder="例）冬至15時に南側の影を確認"
+            />
+            <p class="hint">
+              地図を移動して敷地位置を決め、必要なら共有用の注釈メモを添えてください。
+            </p>
+          </div>
+
+          <details class="section-group" open>
+            <summary class="section-group-title">シミュレーション設定</summary>
+
+            <section class="section">
+              <h2>日時</h2>
+              <div class="field two-col">
+                <div>
+                  <label for="dateInput">日付</label>
+                  <input id="dateInput" type="date" />
+                </div>
+                <div>
+                  <label for="timeInput">時刻</label>
+                  <input id="timeInput" type="time" step="60" />
+                </div>
+              </div>
+              <div class="field">
+                <input id="timeRange" type="range" min="0" max="1439" step="1" />
+                <div class="row sun-times">
+                  <span id="sunriseTime" class="sun-label">日の出 --:--</span>
+                  <span class="spacer"></span>
+                  <span id="sunsetTime" class="sun-label">日の入り --:--</span>
+                </div>
+                <div class="row">
+                  <button
+                    id="playDayButton"
+                    class="btn"
+                    type="button"
+                    aria-pressed="false"
+                    aria-label="1日の影を再生"
+                  >
+                    ▶ 1日再生
+                  </button>
+                </div>
+              </div>
+              <details class="collapsible">
+                <summary>タイムゾーン</summary>
+                <div class="field">
+                  <label for="timezoneSelect">タイムゾーン</label>
+                  <select id="timezoneSelect">
+                    <option value="Asia/Tokyo" selected>Asia/Tokyo (日本)</option>
+                    <option value="UTC">UTC</option>
+                    <option value="America/Los_Angeles">America/Los_Angeles</option>
+                    <option value="Europe/London">Europe/London</option>
+                    <option value="Australia/Sydney">Australia/Sydney</option>
+                  </select>
+                </div>
+              </details>
+            </section>
+
+            <details class="collapsible">
+              <summary>視点プリセット</summary>
+              <div class="field">
+                <div class="row wrap" id="viewPresetRow">
+                  <button class="btn small" data-view="top">真上</button>
+                  <button class="btn small" data-view="oblique">斜め</button>
+                  <button class="btn small" data-view="low">地表寄り</button>
+                  <button class="btn small" data-view="north">北向き</button>
+                  <button class="btn small" data-view="orbit">周回</button>
+                </div>
+              </div>
+            </details>
+
+            <details class="collapsible">
+              <summary>表示設定</summary>
+              <div class="toggle-pair">
+                <div class="field">
+                  <label>PLATEAU建物</label>
+                  <div class="row">
+                    <label class="toggle-switch">
+                      <input type="checkbox" id="plateauToggle" checked />
+                      <span class="toggle-track"></span>
+                    </label>
+                    <span id="plateauLabel" class="toggle-label">ON</span>
+                  </div>
+                  <p id="plateauHint" class="hint hidden">ズーム14以上で表示されます</p>
+                </div>
+                <div class="field">
+                  <label>ベースマップ建物</label>
+                  <div class="row">
+                    <label class="toggle-switch">
+                      <input type="checkbox" id="basemapBuildingsToggle" checked />
+                      <span class="toggle-track"></span>
+                    </label>
+                    <span id="basemapBuildingsLabel" class="toggle-label">ON</span>
+                  </div>
+                </div>
+              </div>
+              <details class="collapsible">
+                <summary>詳細表示設定</summary>
+                <div class="field">
+                  <label for="basemapSelect">地図スタイル</label>
+                  <select id="basemapSelect">
+                    <option value="liberty" selected>Liberty（標準）</option>
+                    <option value="bright">Bright（白黒系）</option>
+                  </select>
+                  <p class="hint">用途に応じて切り替えできます。</p>
+                </div>
+                <div class="field two-col">
+                  <div>
+                    <label for="pitchRange">傾き (pitch)</label>
+                    <input
+                      id="pitchRange"
+                      type="range"
+                      min="0"
+                      max="60"
+                      step="1"
+                      value="55"
+                    />
+                  </div>
+                  <div>
+                    <label for="bearingRange">回転 (bearing)</label>
+                    <input
+                      id="bearingRange"
+                      type="range"
+                      min="-180"
+                      max="180"
+                      step="1"
+                      value="0"
+                    />
+                  </div>
+                </div>
+              </details>
+            </details>
+          </details>
+
+          <details class="section-group" open>
+            <summary class="section-group-title">建物編集</summary>
+            <section class="section">
+              <div class="field">
+                <label>描画モード</label>
+                <div class="row">
+                  <button
+                    id="drawRectButton"
+                    class="btn"
+                    type="button"
+                    aria-pressed="false"
+                  >
+                    矩形を描く
+                  </button>
+                  <button
+                    id="selectButton"
+                    class="btn"
+                    type="button"
+                    aria-pressed="false"
+                  >
+                    選択/編集
+                  </button>
+                  <button id="deleteButton" class="btn btn-danger" type="button">
+                    削除
+                  </button>
+                </div>
+                <p id="drawHint" class="hint hidden">
+                  矩形は「クリック→移動→クリック」で作成します（ドラッグ不要）。作成後は「選択/編集」で移動・拡大縮小できます。
+                </p>
+              </div>
+
+              <div class="field two-col">
+                <div>
+                  <label for="heightInput">高さ (m)</label>
+                  <input
+                    id="heightInput"
+                    type="number"
+                    min="1"
+                    max="500"
+                    step="0.1"
+                    value="6.2"
+                  />
+                  <input
+                    id="heightRange"
+                    type="range"
+                    min="1"
+                    max="500"
+                    step="0.1"
+                    value="6.2"
+                  />
+                </div>
+                <div>
+                  <label for="floorsInput">階数</label>
+                  <input
+                    id="floorsInput"
+                    type="number"
+                    min="1"
+                    max="100"
+                    step="1"
+                    value="2"
+                  />
+                  <input
+                    id="floorsRange"
+                    type="range"
+                    min="1"
+                    max="100"
+                    step="1"
+                    value="2"
+                  />
+                </div>
+              </div>
+
+              <details class="collapsible">
+                <summary>詳細設定</summary>
+                <div class="field">
+                  <label for="floorHeightInput">1階あたり高さ (m)</label>
+                  <input
+                    id="floorHeightInput"
+                    type="number"
+                    min="2.5"
+                    max="5.0"
+                    step="0.1"
+                    value="3.1"
+                  />
+                  <p class="hint">
+                    住宅〜低層ビルの一般的な目安を初期値にしています。
+                  </p>
+                </div>
+              </details>
+            </section>
+          </details>
+
+          <details class="section-group" open>
+            <summary class="section-group-title">結果・分析</summary>
+
+            <section class="section stats">
+              <h2>結果</h2>
+              <div id="statsBox" class="stats-box">
+                <div>ユーザー建物数: <span id="userBuildingCount">0</span></div>
+                <div id="plateauStats" class="hidden">
+                  <div>PLATEAU建物: <span id="plateauBuildingCount">0</span> (影: <span id="plateauShadowCount">0</span>)</div>
+                  <div>ベースマップ建物: <span id="basemapBuildingCount">0</span> (影: <span id="basemapShadowCount">0</span>)</div>
+                  <div>影計算範囲: <span id="shadowBufferDistance">—</span></div>
+                  <div id="plateauErrorNote" class="warning-note hidden">
+                    PLATEAUデータ取得失敗（Range対応サーバが必要）
+                  </div>
+                </div>
+                <div>太陽高度: <span id="sunAltitude">—</span></div>
+                <div>太陽方位: <span id="sunAzimuth">—</span></div>
+                <div>影の長さ（最大）: <span id="shadowLength">—</span></div>
+                <div><span id="sunNote"></span></div>
+              </div>
+            </section>
+
+            <details class="collapsible" open>
+              <summary>比較レポート</summary>
+              <div class="field">
+                <p class="hint">使い方: 1. 比較元を保存 → 2. 条件や日時を変更 → 3. 差分を確認</p>
+                <label for="reportLabelInput">比較ラベル</label>
+                <input
+                  id="reportLabelInput"
+                  type="text"
+                  maxlength="40"
+                  placeholder="例）冬至 15:00"
+                />
+                <div class="row wrap">
+                  <button id="saveComparisonButton" class="btn" type="button">比較元を保存</button>
+                  <button id="copyComparisonReportButton" class="btn" type="button">レポートをコピー</button>
+                  <button id="downloadComparisonCsvButton" class="btn" type="button">CSV保存</button>
+                  <button id="downloadComparisonMarkdownButton" class="btn" type="button">Markdown保存</button>
+                  <button id="clearComparisonButton" class="btn" type="button">クリア</button>
+                </div>
+                <p id="comparisonStatus" class="hint">比較元を1件保存すると、現在状態との差分レポートを作成できます。</p>
+                <div id="comparisonReportCard" class="report-card hidden" aria-live="polite">
+                  <div class="report-card-header">
+                    <strong id="comparisonReportTitle">2時点比較レポート</strong>
+                    <span id="comparisonReportUpdated" class="report-updated"></span>
+                  </div>
+                  <div id="comparisonReportSummary" class="report-summary"></div>
+                  <div id="comparisonReportDiffs" class="report-diffs"></div>
+                </div>
+              </div>
+            </details>
+          </details>
+
+          <details class="section-group">
+            <summary class="section-group-title">その他</summary>
+
+            <section class="section">
+              <h2>問い合わせ</h2>
+              <p class="hint">公開Issueに書きにくい個別相談はXのDMへ、不具合や改善提案はGitHub Issueへお寄せください。</p>
+              <div class="row wrap">
+                <a id="privateInquiryLink" class="btn btn-primary" href="https://x.com/Igniter1005" target="_blank" rel="noopener" data-inquiry-channel="x_dm" data-inquiry-location="app_inquiry_panel">XプロフィールからDM</a>
+                <a id="githubInquiryLink" class="btn" href="https://github.com/rx-tomo/shadow-simulator/issues/new/choose" target="_blank" rel="noopener" data-inquiry-channel="github_issue" data-inquiry-location="app_inquiry_panel">GitHubで不具合・改善提案</a>
+              </div>
+              <p id="githubInquiryNotice" class="hint">GitHub Issueは公開されます。GitHubには個人情報・機密情報を書かず、X DMにも特に機微な情報を送らないでください。</p>
+            </section>
+
+            <section class="panel-footer panel-meta">
+              <small>© <a href="https://openfreemap.org">OpenFreeMap</a> / <a href="https://openmaptiles.org/">OpenMapTiles</a> / <a href="https://www.openstreetmap.org/copyright">© OpenStreetMap contributors</a> / MapLibre</small>
+              <small>3D都市モデル: <a href="https://www.mlit.go.jp/plateau/">PLATEAU</a>（国土交通省）CC BY 4.0</small>
+              <small><a href="./terms.html">利用規約</a> / <a href="./privacy.html">プライバシーポリシー</a> / <a href="./lp">このツールについて</a></small>
+              <p class="precision-note">データ精度: データソースや建物によって異なります / 樹木データなし / 地形起伏は限定的</p>
+            </section>
+          </details>
+        </div>
+
+        <footer class="disclaimer-footer">
+          <p>※ 本ツールの計算結果は参考情報であり、実際の日影環境と異なる場合があります。不動産取引等の重要な意思決定の唯一の根拠としないでください。</p>
+        </footer>
+      </aside>
+
+      <section
+        id="onboardingOverlay"
+        class="onboarding-overlay hidden"
+        role="dialog"
+        aria-modal="true"
+        aria-hidden="true"
+        aria-labelledby="onboardingTitle"
+        aria-describedby="onboardingDescription"
+      >
+        <div id="onboardingCard" class="onboarding-card" tabindex="-1">
+          <div class="onboarding-header">
+            <span class="onboarding-eyebrow">はじめての使い方</span>
+            <span id="onboardingStepCount" class="onboarding-count">1 / 3</span>
+          </div>
+          <div class="onboarding-progress" aria-hidden="true">
+            <span data-onboarding-progress></span>
+            <span data-onboarding-progress></span>
+            <span data-onboarding-progress></span>
+          </div>
+          <h2 id="onboardingTitle">場所を決める</h2>
+          <p id="onboardingDescription"></p>
+          <p id="onboardingTarget" class="onboarding-target"></p>
+          <div class="onboarding-actions">
+            <button id="onboardingSkip" class="btn onboarding-skip" type="button">今後表示しない</button>
+            <div class="onboarding-primary-actions">
+              <button id="onboardingBack" class="btn hidden" type="button">戻る</button>
+              <button id="onboardingNext" class="btn btn-primary" type="button">次へ</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </body>
+</html>

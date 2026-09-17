@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>計画案A/B 日照初期比較パイロット｜日影シミュレータ</title>
+  <meta name="description" content="設計初期の計画案A/Bの日影を同じ9条件で比較する専門家レビュー用の検証見本です。実務に必要な入力・精度・評価点・共有形式へのご意見を募集しています。">
+  <link rel="canonical" href="https://shadow.datagen-pro.com/pilot/">
+  <meta property="og:title" content="計画案A/B 日照初期比較パイロット">
+  <meta property="og:description" content="1敷地・2案を3季節×3時間帯で比較。完成商品の固定仕様ではなく、専門家と必要条件を確認する検証見本です。">
+  <meta property="og:image" content="https://shadow.datagen-pro.com/assets/lp-hero.jpg">
+  <meta property="og:url" content="https://shadow.datagen-pro.com/pilot/">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="stylesheet" href="../seo.css">
+  <script defer src="../analytics-loader.js?v=20260304-1"></script>
+  <script defer src="../seo-analytics.js?v=20260512-1"></script>
+  <style>
+    .pilot-hero {
+      display: grid;
+      grid-template-areas:
+        "copy preview"
+        "actions preview";
+      grid-template-columns: minmax(0, 0.9fr) minmax(420px, 1.1fr);
+      gap: 24px 48px;
+      align-items: center;
+      padding: 64px 0;
+    }
+    .pilot-hero__copy { grid-area: copy; }
+    .pilot-hero__actions { grid-area: actions; align-self: start; }
+    .pilot-report-preview {
+      grid-area: preview;
+      margin: 0;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .pilot-report-preview__label {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 12px 16px;
+      background: #193b59;
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 800;
+    }
+    .pilot-report-preview__label span {
+      color: #dce8f1;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .pilot-report-preview a {
+      display: block;
+      background: #eef2f6;
+    }
+    .pilot-report-preview img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+    .pilot-report-preview figcaption {
+      padding: 14px 16px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .pilot-output-list {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin: 24px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+    .pilot-output-list li {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--soft);
+    }
+    .pilot-output-list strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--ink);
+    }
+    .pilot-review-notice {
+      margin-top: 22px;
+      padding: 18px 20px;
+      border: 2px solid #d48d10;
+      border-radius: 12px;
+      background: #fff8e9;
+      color: #624a18;
+    }
+    .pilot-review-notice__status {
+      display: inline-block;
+      margin-bottom: 8px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: #193b59;
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .pilot-review-notice h2 {
+      margin: 0 0 8px;
+      color: #49350b;
+      font-size: clamp(18px, 2vw, 23px);
+    }
+    .pilot-review-notice p { margin: 0; }
+    .pilot-audience-note {
+      margin-top: 20px;
+      padding: 18px;
+      border-left: 5px solid #193b59;
+      background: var(--soft);
+    }
+    @media (max-width: 840px) {
+      .pilot-hero {
+        grid-template-areas:
+          "copy"
+          "preview"
+          "actions";
+        grid-template-columns: 1fr;
+        padding: 44px 0;
+      }
+      .pilot-output-list { grid-template-columns: 1fr; }
+      .pilot-report-preview__label {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 2px;
+      }
+    }
+  </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "name": "計画案A/B 日照初期比較パイロット",
+    "url": "https://shadow.datagen-pro.com/pilot/",
+    "description": "1敷地の計画案2案を3季節×3時間帯で比較し、実務に必要な入力・精度・評価点・共有形式を専門家と確認する初期比較パイロット。",
+    "areaServed": "JP",
+    "provider": {
+      "@type": "Organization",
+      "name": "Sunlight Intelligence"
+    }
+  }
+  </script>
+</head>
+<body>
+  <nav class="seo-nav" aria-label="主要ナビゲーション">
+    <div class="seo-nav__inner">
+      <a class="seo-logo" href="../">日影シミュレータ</a>
+      <div class="seo-nav__links">
+        <a href="../lp">サービス概要</a>
+        <a href="../hikage-simulation/">使い方</a>
+        <a href="../">無料ツール</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="seo-hero">
+    <div class="seo-container pilot-hero">
+      <div class="pilot-hero__copy">
+        <div class="seo-eyebrow">Sunlight comparison pilot</div>
+        <h1>計画案A/Bを、同じ日照条件で初期比較</h1>
+        <p class="seo-lead">設計事務所・デベロッパーの初期検討向けに、1敷地の計画案2案を3季節×3時間帯で比較し、次の検討へ進むための判断材料を共有用PDFにまとめます。見本は中野駅新北口・旧中野サンプラザ周辺を背景にした、実在計画とは無関係な仮想2案です。</p>
+        <aside class="pilot-review-notice" aria-labelledby="pilot-review-title">
+          <span class="pilot-review-notice__status">専門家レビュー用・商品仕様を検証中</span>
+          <h2 id="pilot-review-title">この見本だけで採用可否を判断しないでください</h2>
+          <p>これは完成商品の固定仕様ではありません。設計事務所・デベロッパーの専門家と、実務に必要な入力・精度・評価点・共有形式を確認し、「足りないもの」を特定するための検証見本です。不足している条件や不要な項目も、率直にお知らせください。</p>
+        </aside>
+      </div>
+      <figure class="pilot-report-preview">
+        <div class="pilot-report-preview__label">
+          専門家レビュー用の検証見本
+          <span>実在地背景・仮想2案を現行エンジンで算出</span>
+        </div>
+        <a
+          href="../assets/pilot-report-example.pdf"
+          data-seo-analytics-id="pilot_report_preview"
+          aria-label="中野駅新北口を背景にした仮想2案の日照初期比較レポートPDF見本を開く"
+        >
+          <img
+            src="../assets/pilot-report-example-page-1.png"
+            width="1684"
+            height="1191"
+            alt="中野駅新北口を背景に、高さ抑制・分棟案と高層集約・広場確保案の仮想配置と評価点を示すPDF見本"
+          >
+        </a>
+        <figcaption>1ページ目で敷地背景・仮想2案・評価点を示し、2ページ目で9条件の最大影と評価点判定、3ページ目で出典・欠損・対象外を示します。</figcaption>
+      </figure>
+      <div class="pilot-hero__actions">
+        <div class="seo-actions">
+          <a
+            class="seo-button seo-button--primary"
+            href="https://x.com/Igniter1005"
+            data-inquiry-channel="x_dm"
+            data-inquiry-location="pilot_page_primary"
+            data-seo-analytics-id="pilot_x_dm"
+          >非公開で相談する（X DM）</a>
+          <a
+            class="seo-button"
+            href="https://github.com/rx-tomo/shadow-simulator/issues/new?template=pilot-feedback.yml"
+            target="_blank"
+            rel="noopener"
+            data-inquiry-channel="github_issue"
+            data-inquiry-location="pilot_page_primary"
+            data-seo-analytics-id="pilot_github_review"
+          >公開レビューを書く（GitHub）</a>
+          <a
+            class="seo-button"
+            href="../assets/pilot-report-example.pdf"
+            data-seo-analytics-id="pilot_report_download"
+          >PDF見本を開く</a>
+          <a class="seo-button" href="#scope">内容を確認する</a>
+        </div>
+        <p class="seo-note">相談はサービスの採用や契約を意味しません。GitHub Issueは公開されます。公開できる一般的な不足条件はGitHubへ、実案件の概要はXのDMへお知らせください。どちらにも、会社名・住所・図面・契約情報などの機密情報を添付しないでください。</p>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="seo-section">
+      <div class="seo-container">
+        <h2>この見本の使い方</h2>
+        <ol class="pilot-output-list">
+          <li><strong>採用判断ではなく、不足条件の確認</strong>見本を完成品として採点するのではなく、実務で足りない入力・精度・評価点・共有形式を確認します。</li>
+          <li><strong>実案件の条件は相談後に設定</strong>評価したい場所、案、時刻、評価点、必要な根拠は、案件の判断目的を聞いてから決めます。</li>
+          <li><strong>専門家の率直な指摘を募集</strong>「この値がないと使えない」「この精度では判断できない」という指摘が、パイロットの最低条件を決める証拠になります。</li>
+        </ol>
+        <p class="pilot-audience-note"><strong>想定している方：</strong>設計事務所の建築士・都市設計担当、デベロッパーの開発企画・設計監理・プロジェクト責任者です。実務担当者の評価と、案件予算を判断する責任者の両方の意見を確認します。</p>
+      </div>
+    </section>
+
+    <section class="seo-section">
+      <div class="seo-container">
+        <h2>PDFで分かること</h2>
+        <p>見本案件は、中野駅新北口・旧中野サンプラザ周辺で、複合施設を「高さ62mの2棟へ分ける案A」と「高さ145mのタワーへ集約する案B」にした仮定です。案Aと案Bの敷地境界・用途・建物形状・評価点は説明用で、実在計画とは無関係です。</p>
+        <ol class="pilot-output-list">
+          <li><strong>システムが出した値</strong>太陽高度・方位、建物高さ、フットプリント面積、最大影、影に入る評価点を記録します。</li>
+          <li><strong>具体的なA/Bの差</strong>36観測で、案Aは延べ6点、案Bは延べ5点が影に入り、冬至の最大影はA 243.7m、B 570.0mでした。</li>
+          <li><strong>測れないものも明示</strong>年間日照時間、日向面積率、連続日照時間、発電量、法規適合性はこの見本の算出対象外です。</li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="seo-section" id="scope">
+      <div class="seo-container">
+        <h2>実案件では相談後に決めるもの</h2>
+        <p>「1敷地・2案・3季節×3時間帯」は検証を始めるための基準範囲で、完成商品の固定仕様ではありません。実際には、何を決めたいかを確認してから、必要な入力、評価点、条件、共有形式を合意します。</p>
+        <div class="seo-grid">
+          <article class="seo-card">
+            <h3>同条件のA/B比較</h3>
+            <p>1敷地・計画案A/Bを、冬至・中間期・夏至の3季節×午前・正午・午後の3時間帯で比較します。</p>
+          </article>
+          <article class="seo-card">
+            <h3>判断目的に合う整理</h3>
+            <p>各条件の影響差、確認できたこと、次に現地や専門ソフトで確かめるべきことを、ヒアリングした判断目的に合わせて整理します。</p>
+          </article>
+          <article class="seo-card">
+            <h3>共有用PDF</h3>
+            <p>比較結果に加え、データ出典・欠損・除外条件、使用した版を明記し、社内で共有できる形にします。</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="seo-section">
+      <div class="seo-container">
+        <h2>対象外のもの</h2>
+        <p>このパイロットは、設計初期の概算スクリーニングです。正式な日影図、建築確認や条例への法規判定、測量、年間日照時間の算定、年間発電量の算定・保証は行いません。最終判断には、現地確認、建築士などの専門家、用途に合う専用ソフトを併用してください。</p>
+      </div>
+    </section>
+
+    <section class="seo-section">
+      <div class="seo-container">
+        <h2>相談から比較まで</h2>
+        <ol>
+          <li>XのDMで、現在の代替手段、検討用途、困っている判断、見本に足りないものを確認します。</li>
+          <li>対象・入力・データ利用権・責任範囲を確認します。</li>
+          <li>対応可能な場合だけ、範囲・納期・費用を個別に提案します。</li>
+          <li>合意後に比較し、出典と限界を含むPDFを共有します。</li>
+          <li>実際の判断に使えたか、次案件でも必要かを確認します。</li>
+        </ol>
+        <p class="seo-note">相談しただけで契約になることはありません。現在公開中の基本シミュレーションは、引き続き登録不要・無料で利用できます。</p>
+      </div>
+    </section>
+
+    <section class="seo-section">
+      <div class="seo-container">
+        <h2>よくある確認</h2>
+        <div class="seo-grid">
+          <article class="seo-card">
+            <h3>この見本だけで導入可否を決めますか？</h3>
+            <p>いいえ。これは必要条件を聞き出すための検証見本です。実案件の目的・入力・許容精度を確認せず、採用を求めるものではありません。</p>
+          </article>
+          <article class="seo-card">
+            <h3>何が足りないか分からなくても相談できますか？</h3>
+            <p>はい。現在使っている図面・ソフト・外注と、どの判断に時間がかかるかを機密情報なしで伺い、確認項目を一緒に整理します。</p>
+          </article>
+          <article class="seo-card">
+            <h3>不足を指摘したら契約になりますか？</h3>
+            <p>いいえ。意見提供だけでも構いません。対応可能な案件に限り、範囲・納期・費用を別途提示し、合意前に作業や請求は行いません。</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="seo-section">
+      <div class="seo-container">
+        <h2>見本への不足・必要条件を教えてください</h2>
+        <p>「この値がないと比較できない」「社内説明には別の図が必要」「この精度なら使える」という意見から受け付けています。実案件の相談でなくても構いません。</p>
+        <div class="seo-actions">
+          <a
+            class="seo-button seo-button--primary"
+            href="https://x.com/Igniter1005"
+            data-inquiry-channel="x_dm"
+            data-inquiry-location="pilot_page_final"
+            data-seo-analytics-id="pilot_x_dm_final"
+          >非公開で相談する（X DM）</a>
+          <a
+            class="seo-button"
+            href="https://github.com/rx-tomo/shadow-simulator/issues/new?template=pilot-feedback.yml"
+            target="_blank"
+            rel="noopener"
+            data-inquiry-channel="github_issue"
+            data-inquiry-location="pilot_page_final"
+            data-seo-analytics-id="pilot_github_review_final"
+          >公開レビューを書く（GitHub）</a>
+        </div>
+        <p class="seo-note">GitHub Issueは公開されます。氏名、会社名、連絡先、住所、図面、顧客情報、未公開URLなどは記載しないでください。</p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

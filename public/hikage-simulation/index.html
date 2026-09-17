@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>日影シミュレーションの使い方｜日影図との違い・時間別の影を無料で確認</title>
+  <meta name="description" content="登録不要・無料の日影シミュレーション。日影図との違い、時間別の影、周辺建物が日当たりへ与える影響を解説し、地図上で確認する手順と注意点を紹介します。">
+  <link rel="canonical" href="https://shadow.datagen-pro.com/hikage-simulation/">
+  <meta property="og:title" content="日影シミュレーションの使い方｜日影図との違い・時間別の影を無料で確認">
+  <meta property="og:description" content="登録不要・無料で使える日影シミュレーションの使い方、日影図との違い、時間別の影と周辺建物の影響を解説します。">
+  <meta property="og:image" content="https://shadow.datagen-pro.com/assets/lp-hero.jpg">
+  <meta property="og:url" content="https://shadow.datagen-pro.com/hikage-simulation/">
+  <meta property="og:type" content="article">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="日影シミュレーションの使い方｜日影図との違い・時間別の影を無料で確認">
+  <meta name="twitter:description" content="登録不要・無料で使える日影シミュレーションの使い方、日影図との違い、時間別の影と周辺建物の影響を解説します。">
+  <link rel="stylesheet" href="../seo.css">
+  <script defer src="../analytics-loader.js?v=20260304-1"></script>
+  <script defer src="../seo-analytics.js?v=20260512-1"></script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebApplication",
+        "@id": "https://shadow.datagen-pro.com/#webapp",
+        "name": "日影シミュレータ",
+        "url": "https://shadow.datagen-pro.com/",
+        "applicationCategory": "UtilitiesApplication",
+        "operatingSystem": "Web",
+        "inLanguage": "ja",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "JPY"
+        },
+        "description": "PLATEAUの3D都市モデルを使い、建物の日影をブラウザ上で確認できる無料Webアプリケーション。"
+      },
+      {
+        "@type": "SoftwareApplication",
+        "@id": "https://shadow.datagen-pro.com/#software",
+        "name": "日影シミュレータ",
+        "applicationCategory": "DesignApplication",
+        "operatingSystem": "Web",
+        "url": "https://shadow.datagen-pro.com/",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "FAQPage",
+        "@id": "https://shadow.datagen-pro.com/hikage-simulation/#faq",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "日影シミュレーションは無料で使えますか？",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "はい。日影シミュレータは登録不要、インストール不要で無料で利用できます。"
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "建築確認申請の日影図として使えますか？",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "本ツールは日当たりや影の参考確認を目的としたWebツールです。法的な根拠や確認申請用図面として利用する場合は、専門家や専用ソフトで確認してください。"
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "どのデータを使っていますか？",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "国土交通省Project PLATEAUの3D都市モデルとOpenStreetMapの地図データを活用しています。"
+            }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <nav class="seo-nav" aria-label="主要ナビゲーション">
+    <div class="seo-nav__inner">
+      <a class="seo-logo" href="../" data-seo-analytics-id="nav_logo_app">日影シミュレータ</a>
+      <div class="seo-nav__links">
+        <a href="../lp">LP</a>
+        <a href="../pilot/">計画案A/B比較</a>
+        <a href="../" data-seo-analytics-id="nav_app_open">アプリを開く</a>
+        <a href="#faq">FAQ</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="seo-hero">
+    <div class="seo-container seo-hero__grid">
+      <div>
+        <div class="seo-eyebrow">Free shadow simulation</div>
+        <h1>日影シミュレーションの使い方｜日影図との違いと時間別の影</h1>
+        <p class="seo-lead">登録不要・無料で使える日影シミュレーションについて、日影図との違い、時間別の影、周辺建物による日当たりへの影響、基本的な使い方を解説します。物件購入前や設計前の参考確認に役立てられます。</p>
+        <div class="seo-actions">
+          <a class="seo-button seo-button--primary" href="../" data-seo-analytics-id="hero_app_open">無料で地図上の日影を確認する</a>
+          <a class="seo-button" href="#difference" data-seo-analytics-id="hero_difference">日影図との違いを見る</a>
+        </div>
+      </div>
+      <figure class="seo-visual">
+        <img src="../assets/lp-hero.jpg" width="1600" height="1000" alt="都市の3D建物モデルに日影が投影される日影シミュレーション画面">
+      </figure>
+    </div>
+  </header>
+
+  <main>
+    <section class="seo-section">
+      <div class="seo-container">
+        <h2>日影シミュレーションとは</h2>
+        <p>日影シミュレーションは、建物の高さ、形状、方位、日付、時刻、太陽位置をもとに、どこに影が落ちるかを可視化する方法です。冬至の午後のように影が長くなりやすい条件を確認すると、物件の日当たりや周辺建物の影響を事前に把握しやすくなります。</p>
+        <p>日影シミュレータでは、PLATEAUの3D都市モデルを地図上に重ね、ブラウザでリアルタイムに影を確認できます。国土交通省の公式一覧は2026年5月11日時点で306地域ですが、本ツールの収録・表示範囲とは同一とは限りません。</p>
+      </div>
+    </section>
+
+    <section class="seo-section">
+      <div class="seo-container">
+        <h2>このツールで確認できること</h2>
+        <div class="seo-grid">
+          <article class="seo-card">
+            <h3>冬至や午後の影</h3>
+            <p>日付と時刻を変えて、影が長く伸びる季節や時間帯の日当たりを確認できます。</p>
+          </article>
+          <article class="seo-card">
+            <h3>周辺建物の影響</h3>
+            <p>PLATEAU対応エリアでは、周辺建物の高さと形状をもとに影を表示します。</p>
+          </article>
+          <article class="seo-card">
+            <h3>任意建物の影</h3>
+            <p>地図上に矩形を描き、高さや階数を設定して計画建物の影を試せます。</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="seo-section" id="difference">
+      <div class="seo-container">
+        <h2>建築確認用の日影図との違い</h2>
+        <div class="seo-table-wrap">
+          <table class="seo-table">
+            <thead>
+              <tr>
+                <th>項目</th>
+                <th>日影シミュレータ</th>
+                <th>建築確認用の日影図・専用ソフト</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>目的</td>
+                <td>物件購入前や設計前の参考確認</td>
+                <td>法規制への適合確認、確認申請資料</td>
+              </tr>
+              <tr>
+                <td>利用環境</td>
+                <td>ブラウザだけ。登録不要、無料</td>
+                <td>専門ソフト、CAD/BIM、専門知識が必要な場合が多い</td>
+              </tr>
+              <tr>
+                <td>向いている使い方</td>
+                <td>初期調査、候補地比較、説明用の画面確認</td>
+                <td>法的判断、正式図面、詳細な設計検証</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="seo-note">本ツールは参考情報の確認を目的としています。法的な根拠、確認申請、近隣説明の正式資料として使う場合は、建築士などの専門家や専用ソフトで確認してください。</p>
+      </div>
+    </section>
+
+    <section class="seo-section">
+      <div class="seo-container">
+        <h2>物件購入・賃貸・設計前の使い方</h2>
+        <div class="seo-grid seo-grid--two">
+          <article class="seo-card">
+            <h3>住宅購入・賃貸</h3>
+            <p>内見前に候補物件を同じ条件で比較できます。冬の午後に隣の建物の影がかかりやすいかを確認すると、現地で見るべきポイントが明確になります。</p>
+          </article>
+          <article class="seo-card">
+            <h3>設計・まちづくり</h3>
+            <p>計画建物の高さを仮に入れて、周辺への影響を初期段階で把握できます。詳細検討前のスクリーニングに向いています。</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="seo-section">
+      <div class="seo-container">
+        <h2>無料ツールとしての特徴</h2>
+        <ul>
+          <li>登録不要、インストール不要で使える</li>
+          <li><a href="../city/">PLATEAU公式公開306地域</a>を公式出典付きで案内</li>
+          <li>日付、時刻、タイムゾーンを変えて確認できる</li>
+          <li>URL共有で同じ場所・条件を共有しやすい</li>
+          <li>オープンソースとして公開中</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="seo-section" id="faq">
+      <div class="seo-container">
+        <h2>よくある質問</h2>
+        <div class="seo-grid">
+          <article class="seo-card">
+            <h3>日影シミュレーションは無料ですか？</h3>
+            <p>無料です。ブラウザで開くだけで利用でき、アカウント登録も不要です。</p>
+          </article>
+          <article class="seo-card">
+            <h3>スマートフォンでも使えますか？</h3>
+            <p>WebGL対応のモダンブラウザで利用できます。細かな比較はデスクトップ環境が見やすいです。</p>
+          </article>
+          <article class="seo-card">
+            <h3>法的な判断に使えますか？</h3>
+            <p>参考確認用です。建築確認や法的判断には、専門家による確認を併用してください。</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="seo-section">
+      <div class="seo-container">
+        <h2>関連ガイド</h2>
+        <div class="seo-grid">
+          <a class="seo-card" href="../articles/winter-solstice-shadow/" data-seo-analytics-id="related_winter_solstice">冬至の日影をシミュレーションする方法</a>
+          <a class="seo-card" href="../articles/apartment-sunlight-check/" data-seo-analytics-id="related_apartment_sunlight">マンション購入前に日当たりを確認する方法</a>
+          <a class="seo-card" href="../articles/shadow-simulation-free/" data-seo-analytics-id="related_shadow_simulation_free">無料で使える日影シミュレーションツール比較</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="seo-footer">
+    <div class="seo-container">
+      <p>&copy; 日影シミュレータ / <a href="../privacy.html">プライバシーポリシー</a> / <a href="../terms.html">利用規約</a></p>
+    </div>
+  </footer>
+</body>
+</html>
